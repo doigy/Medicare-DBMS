@@ -4,12 +4,13 @@ from werkzeug.utils import secure_filename
 from flask_mysqldb import MySQL
 from datetime import datetime, timedelta, date
 from pygal.style import Style
+from threading import Timer
 from barcode.writer import ImageWriter
 from reportlab.pdfgen.canvas import Canvas
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.colors import HexColor
 from datetime import datetime
-import uuid, pygal, secrets, string, os, barcode, pathlib, socket
+import uuid, pygal, secrets, string, os, barcode, pathlib, socket, webbrowser
 
 
 app = Flask(__name__)
@@ -2488,21 +2489,19 @@ def Settings_post(login_token):
 		canvas.save()
 
 		compiled_app_path = pathlib.Path(__file__).parent.resolve()
-		client_ip = request.remote_addr
 
-		if client_ip == ip_address:
-			webbrowser.open(f'{compiled_app_path}/data/receipts/test123.pdf')
-
-			return render_template('Settings.html', login_token = login_token, error = error, accounts_data = accounts_data, shop_name = shop_name, shop_contact = shop_contact, shop_address = shop_address, refund_valid_limit = refund_valid_limit, sales_tax = sales_tax, current_closingtime = current_closingtime)
-
-		else:
-
-			return send_file(f'{compiled_app_path}/data/receipts/test123.pdf', as_attachment = True)
+		os.startfile(f'{compiled_app_path}\\data\\receipts\\test.pdf')
 		
 	else:
 		pass
 
 	return render_template('Settings.html', login_token = login_token, error = error, accounts_data = accounts_data, shop_name = shop_name, shop_contact = shop_contact, shop_address = shop_address, refund_valid_limit = refund_valid_limit, sales_tax = sales_tax, current_closingtime = current_closingtime)
 
+def Open_browser():
+	#Set debug = False to prevent it from opening two tabs
+	#Open browser tab
+	webbrowser.open(f'http://localhost:5000/')
+
 if __name__ == '__main__':
+	Timer(0.1, Open_browser).start()
 	app.run(host = 'localhost', port = 5000, debug = False)
