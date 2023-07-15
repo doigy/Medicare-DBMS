@@ -22,7 +22,7 @@ body{
     justify-content: space-between;
 }
 
-.nav-home-button, .nav-recordsale-button, .nav-customers-button, .nav-inventory-button, .nav-suppliers-button, .nav-employees-button, .nav-settings-button, .nav-support-button, .nav-logout-button{
+.nav-home-button, .nav-recordsale-button, .nav-customers-button, .nav-inventory-button, .nav-suppliers-button, .nav-employees-button, .nav-settings-button, .nav-logout-button{
 	color: #ECF0F1;
 	height: 2.9em;
 	width: 5.2em;
@@ -39,7 +39,7 @@ body{
 	color: #1A1A1A;
 }
 
-.nav-home-button:hover, .nav-recordsale-button:hover, .nav-customers-button:hover, .nav-inventory-button:hover, .nav-employees-button:hover, .nav-settings-button:hover, .nav-support-button:hover, .nav-logout-button:hover{
+.nav-home-button:hover, .nav-recordsale-button:hover, .nav-customers-button:hover, .nav-inventory-button:hover, .nav-employees-button:hover, .nav-settings-button:hover, .nav-logout-button:hover{
 	background-color: #EEEEEE;
 	color: #1A1A1A;
 }

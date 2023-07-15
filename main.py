@@ -285,7 +285,7 @@ def Home_post(login_token):
 		canvas = Canvas(f'financial-summaries/{now.strftime("%Y-%m-%d_%H-%M-%S")}.pdf', pagesize = A4)
 		canvas.setFillColor(HexColor('#1A1A1A'))
 		canvas.setFont('Helvetica', 20)
-		canvas.drawString(130, 800, f'Pharmacy | {now.strftime("%Y/%m/%d")} Summary')
+		canvas.drawString(130, 800, f'Medicare | {now.strftime("%Y/%m/%d")} Summary')
 		canvas.setFillColor(HexColor('#1A1A1A'))
 		canvas.setFont('Helvetica', 15)
 		# canvas.drawString(30, 730, f'Opening stock')
@@ -326,8 +326,6 @@ def Home_post(login_token):
 		# canvas.drawString(10, 100, f'Number of discounts given have {number_of_discounts_performance} {number_of_discounts_percentage}% from the past month')
 		# canvas.drawString(10, 70, f'Average transaction value has {average_transaction_value_performance} {average_transaction_value_percentage}% from the past month')
 		# canvas.drawString(10, 40, f'Sales have {sales_performance} {sales_percentage}% from the past month')
-		# canvas.setFont('Helvetica-Bold', 15)
-		# canvas.drawString(205, 10, 'POWERED BY SyserTech')
 		canvas.save()
 
 		os.startfile(f'{compiled_app_path}\\financial-summaries\\{now.strftime("%Y-%m-%d_%H-%M-%S")}.pdf')
@@ -740,12 +738,12 @@ def Record_sale_post(login_token):
 		refund_cart_itemids = []
 
 		#Get validity days for refund
-		refund_valid_limit_file = open('data/bin/RefundValidLimit.bin', 'rb')
+		refund_valid_limit_file = open('bin/RefundValidLimit.bin', 'rb')
 		refund_valid_limit = int(refund_valid_limit_file.read().decode())
 		refund_valid_limit_file.close()
 
 		#Sellingrecord database connection
-		sellingrecord_db_connection = sqlite3.connect('data/databases/sellingrecord.db')
+		sellingrecord_db_connection = sqlite3.connect('databases/sellingrecord.db')
 		sellingrecord_db_cursor = sellingrecord_db_connection.cursor()
 
 		#Sellingrecord database query get record year
@@ -775,7 +773,7 @@ def Record_sale_post(login_token):
 
 		if current_day - refund_cart_recordday <= refund_valid_limit and refund_cart_condition == 'sold':
 			#Refundrecord database connection
-			refundrecord_db_connection = sqlite3.connect('data/databases/refundrecord.db')
+			refundrecord_db_connection = sqlite3.connect('databases/refundrecord.db')
 			refundrecord_db_cursor = refundrecord_db_connection.cursor()
 
 			#Carts database query update values
@@ -1010,7 +1008,7 @@ def Checkout(login_token):
 		canvas.setPageSize((226.771653543, 110))
 		canvas.setFillColor(HexColor('#1A1A1A'))
 		canvas.setFont('Helvetica', 11)
-		canvas.drawString(5, 90, 'Pharmacy')
+		canvas.drawString(5, 90, 'Medicare')
 		receipt_barcode_image = f'static/receipt-barcodes/{cart_id}.png'
 		canvas.drawImage(receipt_barcode_image, 140, 60, height = 48, width = 88)	
 		canvas.setFont('Helvetica', 9)
@@ -1144,7 +1142,7 @@ def Checkout(login_token):
 		canvas.setPageSize((226.771653543, height))
 		canvas.setFillColor(HexColor('#1A1A1A'))
 		canvas.setFont('Helvetica', 11)
-		canvas.drawString(5, height - 15, 'Pharmacy')
+		canvas.drawString(5, height - 15, 'Medicare')
 		receipt_barcode_image = f'static/receipt-barcodes/{cart_id}.png'
 		canvas.drawImage(receipt_barcode_image, 144, height - 49, height = 48, width = 88)	
 		canvas.setFont('Helvetica', 9)
@@ -1154,10 +1152,6 @@ def Checkout(login_token):
 		canvas.drawString(5, height - 45, f'Contact: {shop_contact}')
 		canvas.drawString(0, height - 55, '-----------------------------------------------------------------------------------------------------------------------------------------')
 		canvas.drawString(5, height - 60, 'item id | name')
-		canvas.setFont('Helvetica', 4)
-		canvas.drawString(65, height - 60, 'size')
-		canvas.drawString(85, height - 60, 'color')
-		canvas.drawString(105, height - 60, 'flavour')
 		canvas.setFont('Helvetica', 5)
 		canvas.drawString(140, height - 60, 'quantity')
 		canvas.drawString(190, height - 60, 'price')
@@ -1189,8 +1183,6 @@ def Checkout(login_token):
 		canvas.drawString(180, 30, f'{round(amount_paid - final_total, 2)}Rs')
 		canvas.drawString(0, 20, '-----------------------------------------------------------------------------------------------------------------------------------------')
 		canvas.drawString(5, 12, 'THANKYOU FOR SHOPPING WITH US')
-		# canvas.setFont('Helvetica-Bold', 7)
-		# canvas.drawString(5, 5, 'powered by SyserTech')
 		canvas.setFont('Helvetica', 5)
 		canvas.drawString(123, 5, f'valid for refund within {refund_valid_limit} days after purchase')
 
@@ -2254,7 +2246,7 @@ def Settings_post(login_token):
 				return render_template('Settings.html', login_token = login_token, error = error, accounts_data = accounts_data, shop_name = shop_name, shop_contact = shop_contact, shop_address = shop_address, refund_valid_limit = refund_valid_limit, sales_tax = sales_tax, current_closingtime = current_closingtime)
 
 			#Updating sales tax value
-			sales_tax_file = open('data/bin/SalesTax.bin', 'wb+')
+			sales_tax_file = open('bin/SalesTax.bin', 'wb+')
 			sales_tax_file.write(sales_tax_new.encode())
 			sales_tax_file.close()
 
@@ -2275,7 +2267,7 @@ def Settings_post(login_token):
 
 				return render_template('Settings.html', login_token = login_token, error = error, accounts_data = accounts_data, shop_name = shop_name, shop_contact = shop_contact, shop_address = shop_address, refund_valid_limit = refund_valid_limit, sales_tax = sales_tax, current_closingtime = current_closingtime)
 
-			refund_valid_limit_file = open('data/bin/RefundValidLimit.bin', 'wb+')
+			refund_valid_limit_file = open('bin/RefundValidLimit.bin', 'wb+')
 			refund_valid_limit_file.write(refund_valid_limit_new.encode())
 			refund_valid_limit_file.close()
 
@@ -2295,7 +2287,7 @@ def Settings_post(login_token):
 
 				return render_template('Settings.html', login_token = login_token, error = error, accounts_data = accounts_data, shop_name = shop_name, shop_contact = shop_contact, shop_address = shop_address, refund_valid_limit = refund_valid_limit, sales_tax = sales_tax, current_closingtime = current_closingtime)
 
-			shop_address_file = open('data/bin/ShopAddress.bin', 'wb+')
+			shop_address_file = open('bin/ShopAddress.bin', 'wb+')
 			shop_address_file.write(shop_address_new.encode())
 			shop_address_file.close()
 
@@ -2315,7 +2307,7 @@ def Settings_post(login_token):
 
 				return render_template('Settings.html', login_token = login_token, error = error, accounts_data = accounts_data, shop_name = shop_name, shop_contact = shop_contact, shop_address = shop_address, refund_valid_limit = refund_valid_limit, sales_tax = sales_tax, current_closingtime = current_closingtime)
 
-			shop_contact_file = open('data/bin/ShopContact.bin', 'wb+')
+			shop_contact_file = open('bin/ShopContact.bin', 'wb+')
 			shop_contact_file.write(shop_contact_new.encode())
 			shop_contact_file.close()
 
@@ -2362,8 +2354,8 @@ def Settings_post(login_token):
 
 	elif button_pressed == 'clearreceipts':
 		try:
-			for f in os.listdir('data/receipts'):
-				os.remove(os.path.join('data/receipts', f))
+			for f in os.listdir('receipts'):
+				os.remove(os.path.join('receipts', f))
 
 			error = 'receipts cleared'
 		except Exception:
@@ -2374,8 +2366,8 @@ def Settings_post(login_token):
 	#Delete all financial summaries
 	elif button_pressed == 'clearfinancialsummaries':
 		try:
-			for f in os.listdir('data/financial-summaries'):
-				os.remove(os.path.join('data/financial-summaries', f))
+			for f in os.listdir('financial-summaries'):
+				os.remove(os.path.join('financial-summaries', f))
 
 			error = 'financial summaries cleared'
 		except Exception:
@@ -2386,8 +2378,8 @@ def Settings_post(login_token):
 	#Delete all holding tokens
 	elif button_pressed == 'clearholdingtokens':
 		try:
-			for f in os.listdir('data/holding-tokens'):
-				os.remove(os.path.join('data/holding-tokens', f))
+			for f in os.listdir('holding-tokens'):
+				os.remove(os.path.join('holding-tokens', f))
 
 			error = 'holding tokens cleared'
 		except Exception:
@@ -2398,53 +2390,43 @@ def Settings_post(login_token):
 	elif button_pressed == 'generatetestreceipt':
 		height_num = 80
 		current_date = str(datetime.now().date())
-		refund_valid_limit_file = open('data/bin/RefundValidLimit.bin', 'rb')
+		refund_valid_limit_file = open('bin/RefundValidLimit.bin', 'rb')
 		refund_valid_limit = refund_valid_limit_file.read().decode()
 		refund_valid_limit_file.close()
-		sales_tax_file = open('data/bin/SalesTax.bin', 'rb')
+		sales_tax_file = open('bin/SalesTax.bin', 'rb')
 		sales_tax = sales_tax_file.read().decode()
 		sales_tax_file.close()
-		try:
-			receipt_barcode = Code128("test123", writer = ImageWriter())
-			receipt_barcode.save(f'static/receipt-barcodes/test123')
-		except Exception:
-			pass
-		shop_address_file = open('data/bin/ShopAddress.bin', 'rb')
+
+		barcode_format = barcode.get_barcode_class('code128')
+		receipt_barcode = barcode_format(str(cart_id), writer = ImageWriter())
+		receipt_barcode.save(f'static/receipt-barcodes/test')
+
+		shop_address_file = open('bin/ShopAddress.bin', 'rb')
 		shop_address = shop_address_file.read().decode()
 		shop_address_file.close()
-		shop_contact_file = open('data/bin/ShopContact.bin', 'rb')
+		shop_contact_file = open('bin/ShopContact.bin', 'rb')
 		shop_contact = shop_contact_file.read().decode()
 		shop_contact_file.close()
-		shop_name_file = open('data/bin/ShopName.bin', 'rb')
-		shop_name = shop_name_file.read().decode()
-		shop_name_file.close()
 		itemids_receipt_display = [1, 2, 3, 4, 5]
 		itemnames_receipt_display = ["name1", "name2", "name3", "name4" , "name5"]
 		itemquantities_receipt_display = [2, 2, 2, 2, 2]
-		itemsizes_receipt_display = ["small", "small", "small", "small", "small"]
-		itemcolors_receipt_display = ["red", "blue", "black", "yellow", "green"]
-		itemflavours_receipt_display = ["chocolate", "vanilla", "caramel", "strawberry", "cherry"]
 		itemtotalsaleprices_receipt_display = [100.0, 100.0, 100.0, 100.0, 100.0]
 		height = 220 + (len(itemids_receipt_display) * 20)
 
-		canvas = Canvas(f'data/receipts/test123.pdf')
+		canvas = Canvas(f'receipts/test.pdf')
 		canvas.setPageSize((226.771653543, height))
 		canvas.setFillColor(HexColor('#1A1A1A'))
 		canvas.setFont('Helvetica', 11)
-		canvas.drawString(5, height - 15, shop_name)
-		receipt_barcode_image = f'static/receipt-barcodes/test123.png'
+		canvas.drawString(5, height - 15, 'Medicare')
+		receipt_barcode_image = f'static/receipt-barcodes/test.png'
 		canvas.drawImage(receipt_barcode_image, 144, height - 49, height = 48, width = 88)	
 		canvas.setFont('Helvetica', 9)
-		canvas.drawString(5, height - 25, f'test123 | {current_date}')
+		canvas.drawString(5, height - 25, f'test | {current_date}')
 		canvas.setFont('Helvetica', 5)
 		canvas.drawString(5, height - 35, f'Address: {shop_address}')
 		canvas.drawString(5, height - 45, f'Contact: {shop_contact}')
 		canvas.drawString(0, height - 55, '-----------------------------------------------------------------------------------------------------------------------------------------')
 		canvas.drawString(5, height - 60, 'item id | name')
-		canvas.setFont('Helvetica', 4)
-		canvas.drawString(65, height - 60, 'size')
-		canvas.drawString(85, height - 60, 'color')
-		canvas.drawString(105, height - 60, 'flavour')
 		canvas.setFont('Helvetica', 5)
 		canvas.drawString(140, height - 60, 'quantity')
 		canvas.drawString(190, height - 60, 'price')
@@ -2452,10 +2434,6 @@ def Settings_post(login_token):
 
 		for i in range(0, len(itemids_receipt_display)):
 			canvas.drawString(5, height - (height_num - 10), f'{itemids_receipt_display[i]}')
-			canvas.setFont('Helvetica', 4)
-			canvas.drawString(65, height - (height_num - 10), f'{itemsizes_receipt_display[i]}')
-			canvas.drawString(85, height - (height_num - 10), f'{itemcolors_receipt_display[i]}')
-			canvas.drawString(105, height - (height_num - 10), f'{itemflavours_receipt_display[i]}')
 			canvas.setFont('Helvetica', 5)
 			canvas.drawString(5, height - (height_num - 5), f'{itemnames_receipt_display[i]}')
 			canvas.drawString(150, height - (height_num - 10), f'{itemquantities_receipt_display[i]}')
@@ -2481,8 +2459,6 @@ def Settings_post(login_token):
 		canvas.drawString(180, 30, f'xxxxxxRs')
 		canvas.drawString(0, 20, '-----------------------------------------------------------------------------------------------------------------------------------------')
 		canvas.drawString(5, 12, 'THANKYOU FOR SHOPPING WITH US')
-		canvas.setFont('Helvetica-Bold', 7)
-		canvas.drawString(5, 5, 'powered by SyserTech')
 		canvas.setFont('Helvetica', 5)
 		canvas.drawString(123, 5, f'valid for refund within {refund_valid_limit} days after purchase')
 
@@ -2490,12 +2466,12 @@ def Settings_post(login_token):
 
 		compiled_app_path = pathlib.Path(__file__).parent.resolve()
 
-		os.startfile(f'{compiled_app_path}\\data\\receipts\\test.pdf')
+		os.startfile(f'{compiled_app_path}\\receipts\\test.pdf')
 		
 	else:
 		pass
 
-	return render_template('Settings.html', login_token = login_token, error = error, accounts_data = accounts_data, shop_name = shop_name, shop_contact = shop_contact, shop_address = shop_address, refund_valid_limit = refund_valid_limit, sales_tax = sales_tax, current_closingtime = current_closingtime)
+	return render_template('Settings.html', login_token = login_token, error = error, accounts_data = accounts_data, shop_contact = shop_contact, shop_address = shop_address, refund_valid_limit = refund_valid_limit, sales_tax = sales_tax, current_closingtime = current_closingtime)
 
 def Open_browser():
 	#Set debug = False to prevent it from opening two tabs
