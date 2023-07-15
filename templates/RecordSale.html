@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang = 'en'>
+	<head>
+		<title>
+			{% block title %} Record Sale {% endblock %}
+		</title>
+		<meta charset = "UTF-8">
+        <meta name = "description" content = "SyserRetail - retail management system">
+        <meta name = "keywords" content = "HTML,CSS,XML,JavaScript">
+        <meta name = "author" content = "SyserRetail">
+		<meta name = "viewport" content = "width = 1450"/>
+		<link rel = "stylesheet" href = "{{ url_for('static', filename = 'RecordSale_style.css') }}">
+		<script src="https://kit.fontawesome.com/141a332d2a.js" crossorigin="anonymous"></script>
+        <link rel = "stylesheet" href = "https://fonts.googleapis.com/css?family=Ubuntu|Comfortaa|Roboto">
+	</head>
+	<div class = "header-container">
+        <div class="logo-container">
+            <i class="fa-solid fa-capsules fa-2xl" style="color: #11c535;" id = "logo"></i>
+            <span class="logo-name">Medicare</span>
+        </div>
+        <div class = "nav-container">
+            <a href = "{{ url_for('Home', login_token = login_token) }}" class = "nav-home-button" title = "home">
+                <i class = "fas fa-home" id = "icon"></i>
+                <div>
+                    <span class = "nav-button-label">home</span>
+                </div>
+            </a>
+            <a href = "{{ url_for('Record_sale', login_token = login_token) }}" class = "nav-recordsale-button" title = "record sale">
+                <i class = "fas fa-cash-register" id = "icon"></i>
+                <div>
+                    <span class = "nav-button-label">POS</span>
+                </div>
+            </a>
+            <a href = "{{ url_for('Customers', login_token = login_token) }}" class = "nav-customers-button" title = "customers">
+                <i class = "fa-solid fa-basket-shopping" id = "icon"></i>
+                <div>
+                    <span class = "nav-button-label">customers</span>
+                </div>
+            </a>
+            <a href = "{{ url_for('Inventory', login_token = login_token) }}" class = "nav-inventory-button" title = "inventory">
+                <i class = "fas fa-boxes" id = "icon"></i>
+                <div>
+                    <span class = "nav-button-label">inventory</span>
+                </div>
+            </a>
+            <a href = "{{ url_for('Suppliers', login_token = login_token) }}" class = "nav-suppliers-button" title = "suppliers">
+                <i class = "fa-solid fa-truck" id = "icon"></i>
+                <div>
+                    <span class = "nav-button-label">suppliers</span>
+                </div>
+            </a>
+            <a href = "{{ url_for('Employees', login_token = login_token) }}" class = "nav-employees-button" title = "employees">
+                <i class = "fa-solid fa-users" id = "icon"></i>
+                <div>
+                    <span class = "nav-button-label">employees</span>
+                </div>
+            </a>
+            <a href = "{{ url_for('Settings', login_token = login_token) }}" class = "nav-settings-button" title = "settings">
+                <i class = "fas fa-cog" id = "icon"></i>
+                <div>
+                    <span class = "nav-button-label">settings</span>
+                </div>
+            </a>
+            <a href = "{{ url_for('Logout') }}" class = "nav-logout-button" title = "log out">
+                <i class = "fas fa-sign-out-alt" id = "icon"></i>
+                <div>
+                    <span class = "nav-button-label">logout</span>
+                </div>
+            </a>
+        </div>
+    </div>
+	<body>
+		<div class = "itementry-total-paid-checkout-container">
+			<form method = "POST" action = "{{ url_for('Record_sale_post', login_token = login_token) }}">
+				<div class = "itementry-main">
+					<div class = "itementry">
+						<div class = "itemid-container">
+							<p class = "itemid-textbox-label">item id</p>
+							<input type = "text" name = "itemid" class = "itemid-textbox" autofocus/>
+						</div>
+						<div class = "itemquantity-container">
+							<p class = "itemquantity-textbox-label">quantity</p>
+							<input type = "number" name = "itemquantity" class = "itemquantity-textbox" value = "1"/>
+						</div>
+						<button type = "submit" name = "cartmodify" value = "itemadd" class = "item-saleconfirm-button" title = "confirm">
+							<i class = "fas fa-arrow-right"></i>
+						</button>
+					</div>
+					<div class = "customerid-container">
+						<p class = "customerid-textbox-label">customer id: </p>
+						<input type = "text" name = "customerid" class = "customerid-textbox" value = "{{ customer_id }}" />
+					</div>
+				</div>
+			</form>
+			<form method = "POST" action = "{{ url_for('Checkout', login_token = login_token) }}">
+				<div class = "subtotal-cartid-amountpaid-checkout-container">
+					<div class = "subtotal-container">
+						<p class = "subtotalvalue">
+							sub total : {{ sub_total }}Rs
+							<br/>sales tax: {{ sales_tax }}%
+							<br/>total : {{ final_total }}Rs
+						</p>
+					</div>
+					<div class = "cartid-container">
+						<p class = "cartidvalue">cart id : {{ cart_id }}</p>
+					</div>
+					<div class = "numberofitems-container">
+						<p class = "numberofitemsvalue"># of items : {{ number_of_items }}</p>
+					</div>
+					<div class = "amountpaid-container">
+						<p class = "amountpaid-textbox-label">amount paid</p>
+						<input type = "number" name = "amountpaid" step = 0.01 class = "amountpaid-textbox"/><span class = "amountpaid-rs-label">Rs</span>
+					</div>
+					<div class = "checkout-holdbill-reset-button-container">
+						<div class = "buttons-group">
+							<button type = "submit" name = "endofrecordsalebutton" value = "calculatetotal" class = "total-button" title = "calculate total">
+								<i class = "fas fa-calculator"></i>
+							</button>
+							<button type = "submit" name = "endofrecordsalebutton" value = "holdcart" class = "holdcart-button" title = "hold cart">
+								<i class = "fas fa-pause"></i>
+							</button>
+						</div>
+						<div class = "buttons-group">
+							<button type = "submit" name = "endofrecordsalebutton" value = "checkout" class = "checkout-button" title = "checkout">
+								<i class = "fas fa-shopping-cart"></i>
+							</button>
+							<button type = "submit" name = "endofrecordsalebutton" value = "resetcart" class = "reset-button" title = "reset cart">
+								<i class = "fas fa-redo"></i>
+							</button>
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+		<form method = "POST" action = "{{ url_for('Record_sale_post', login_token = login_token) }}">
+			<div class = "restcarts-container">
+				<div class = "restcarts-heading-search">
+					<span class = "restcarts-heading">Carts</span>
+					<div class = "search-container">
+						<input type = "search" name = "cartssearchquery" class = "search-textbox"/>
+						<button type = "submit" name = "cartmodify" value = "cartssearch" class = "cart-search-button">
+                        	<i class = "fas fa-search"></i>
+                    	</button>
+					</div>
+				</div>
+				<hr/>
+				<div class = "restcarts-info">
+					{% for i in rest_carts %}
+						<span class = "restcarts-info-receiptcode">{{ i[0] }}-{{ i[1] }}</span>
+						<button type = "submit" name = "cartmodify" value = "refund{{ i[0] }}" class = "refund-button" title = "refund">
+							refund
+						</button>
+						<button type = "submit" name = "cartmodify" value = "loadcart{{ i[0] }}" class = "cart-load-button" title = "load cart">
+							<i class = "fas fa-arrow-right"></i>
+						</button>
+						<br/><br/>
+					{% endfor %}
+				</div>
+			</div>
+		</form>
+		<form method = "POST" action = "{{ url_for('Record_sale_post', login_token = login_token) }}">
+			<div class = "itemslist-container">
+				{% for i in cart_loaded %}
+					<div class = "itemlist-container">
+						<div class = "item-container">
+							<p>id: {{ i[0] }}</p>
+							<p>name: <input type = "text" class = "itemname-textbox" value = "{{ i[1] }}" readonly></p>
+							<p>quantity: {{ i[2] }}</p>
+							<p>total sale price: {{ i[3] }}Rs</p>
+							<button type = "submit" name = "cartmodify" value = "itemdelete{{ i[0] }}" class = "item-saledelete-button">
+								<i class = "fas fa-trash-alt"></i>
+							</button>
+						</div>
+						<div class = "item-image-container">
+							<img src = "/static/item-images/{{ i[0] }}.jpg" class = "item-image" alt = "item image"/>
+						</div>
+					</div>
+				{% endfor %}
+			</div>
+		</form>
+	</body>
+	<script type = "text/javascript">
+		var error = "{{ error }}";
+		if (error == "none"){
+			//pass
+		}else{
+			window.alert(error);
+		}
+	</script>
+</html>

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang = 'en'>
+	<head>
+		<title>
+            {% block title %} Customers {% endblock %}
+        </title>
+        <meta charset = "UTF-8">
+        <meta name = "description" content = "SyserRetail - retail management system">
+        <meta name = "keywords" content = "HTML,CSS,XML,JavaScript">
+        <meta name = "author" content = "SyserRetail">
+        <meta name = "viewport" content = "width = 1450"/>
+		<link rel = "stylesheet" href = "{{ url_for('static', filename = 'customers_style.css') }}">
+        <script src="https://kit.fontawesome.com/141a332d2a.js" crossorigin="anonymous"></script>
+        <link rel = "stylesheet" href = "https://fonts.googleapis.com/css?family=Ubuntu|Comfortaa|Roboto">
+	</head>
+    <div class = "header-container">
+        <div class="logo-container">
+            <i class="fa-solid fa-capsules fa-2xl" style="color: #11c535;" id = "logo"></i>
+            <span class="logo-name">Medicare</span>
+        </div>
+        <div class = "nav-container">
+            <a href = "{{ url_for('Home', login_token = login_token) }}" class = "nav-home-button" title = "home">
+                <i class = "fas fa-home" id = "icon"></i>
+                <div>
+                    <span class = "nav-button-label">home</span>
+                </div>
+            </a>
+            <a href = "{{ url_for('Record_sale', login_token = login_token) }}" class = "nav-recordsale-button" title = "record sale">
+                <i class = "fas fa-cash-register" id = "icon"></i>
+                <div>
+                    <span class = "nav-button-label">POS</span>
+                </div>
+            </a>
+            <a href = "{{ url_for('Customers', login_token = login_token) }}" class = "nav-customers-button" title = "customers">
+                <i class = "fa-solid fa-basket-shopping" id = "icon"></i>
+                <div>
+                    <span class = "nav-button-label">customers</span>
+                </div>
+            </a>
+            <a href = "{{ url_for('Inventory', login_token = login_token) }}" class = "nav-inventory-button" title = "inventory">
+                <i class = "fas fa-boxes" id = "icon"></i>
+                <div>
+                    <span class = "nav-button-label">inventory</span>
+                </div>
+            </a>
+            <a href = "{{ url_for('Suppliers', login_token = login_token) }}" class = "nav-suppliers-button" title = "suppliers">
+                <i class = "fa-solid fa-truck" id = "icon"></i>
+                <div>
+                    <span class = "nav-button-label">suppliers</span>
+                </div>
+            </a>
+            <a href = "{{ url_for('Employees', login_token = login_token) }}" class = "nav-employees-button" title = "employees">
+                <i class = "fa-solid fa-users" id = "icon"></i>
+                <div>
+                    <span class = "nav-button-label">employees</span>
+                </div>
+            </a>
+            <a href = "{{ url_for('Settings', login_token = login_token) }}" class = "nav-settings-button" title = "settings">
+                <i class = "fas fa-cog" id = "icon"></i>
+                <div>
+                    <span class = "nav-button-label">settings</span>
+                </div>
+            </a>
+            <a href = "{{ url_for('Logout') }}" class = "nav-logout-button" title = "log out">
+                <i class = "fas fa-sign-out-alt" id = "icon"></i>
+                <div>
+                    <span class = "nav-button-label">logout</span>
+                </div>
+            </a>
+        </div>
+    </div>
+	<body>
+        <div class = "search-container">
+            <form method = "POST" action = "{{ url_for('Customers_search', login_token = login_token) }}">
+                <div class = "search">
+                    <input type = "search" name = "query" class = "search-textbox"/>
+                    <select class = "search-filter-dropdown" name = "filter">
+                        <option value = "null" SELECTED>null</option>
+                        <option value = "id">id</option>
+                        <option value = "name">name</option>
+                        <option value = "contact">contact number</option>
+                        <option value = "name">name</option>
+                        <option value = "address">address</option>
+                    </select>
+                    <button type = "submit" value = "search" class = "customer-search-button">
+                        <i class = "fas fa-search"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+        <form method = "POST" action = "{{ url_for('Customers_mod', login_token = login_token) }}">
+            <div class = "searchresults-container">
+                {% for i in customers_search_results %}
+                    <div class = "searchresult-container">
+                        <div class = "searchresult">
+                            <div class = "customermodify-id-container">
+                                <span class = "customermodify-id-label">id :</span>
+                                <span type = "text" class = "customersmodify-id" id = "customermodify-id-{{ i[0] }}">{{ i[0] }}</span>
+                            </div>
+                            <div class = "customermodify-name-container">
+                                <span class = "customermodify-name-label">name : </span>
+                                <input type = "text" class = "customermodify-name-textbox" name = "customermodifyname{{ i[0] }}" value = "{{ i[1] }}"/>
+                            </div>
+                            <div class = "customermodify-contact-container">
+                                <span class = "customermodify-contact-label">contact : </span>
+                                <input type = "text" class = "customermodify-contact-textbox" name = "customermodifycontact{{ i[0] }}" value = "{{ i[2] }}"/>
+                            </div>
+<!--                             <div class = "customerodify-recorddate-container">
+                                <span class = "customermodify-recordyear-label">year : </span>
+                                <input type = "text" class = "customermodify-recordyear-textbox" name = "customermodifyrecordyear{{ i[0] }}" value = "{{ i[9] }}"/>
+
+                                <span class = "customermodify-recordmonth-label">month : </span>
+                                <input type = "text" class = "customermodify-recordmonth-textbox" name = "customermodifyrecordmonth{{ i[0] }}" value = "{{ i[10] }}"/>
+                                
+                                <span class = "customermodify-recordday-label">day : </span>
+                                <input type = "text" class = "customermodify-recordday-textbox" name = "customermodifyrecordday{{ i[0] }}" value = "{{ i[11] }}"/>
+                            </div> -->
+                            <div class = "customermodify-address-container">
+                                <span class = "customermodify-address-label">address : </span>
+                                <input type = "text" class = "customermodify-address-textbox" name = "customermodifyaddress{{ i[0] }}" value = "{{ i[3] }}"/>
+                            </div>
+                            <button type = "submit" name = "customermodifyconfirm" value = "delete{{ i[0] }}" class = "customer-delete-button">
+                                <i class = "fas fa-trash-alt"></i>
+                            </button>
+                            <button type = "submit" name = "customermodifyconfirm" value = "{{ i[0] }}" class = "customer-modifyconfirm-button">
+                                <i class = "fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </form>
+        <div class = "customeradd-container">
+            <form method = "POST" action = "{{ url_for('Customers_mod', login_token = login_token) }}" enctype = "multipart/form-data">
+                <div class = "customeradd">
+                    <p class = "customeradd-id-label">customer id</p>
+                    <input type = "text" class = "customeradd-id-textbox" name = "customeraddid" value = "{{ new_id }}"/>
+                    <p class = "customeradd-name-label">name</p>
+                    <input type = "text" class = "customeradd-name-textbox" name = "customeraddname"/>
+                    <p class = "customeradd-contact-label">contact</p>
+                    <input type = "text" class = "customeradd-contact-textbox" name = "customeraddcontact"/>
+                    <div>
+                        <p class = "customeradd-address-label">address</p>
+                        <input type = "text" class = "customeradd-address-textbox" name = "customeraddaddress"/>
+                    </div>
+                    <button type = "submit" name = "customermodifyconfirm" value = "customeraddconfirm" class = "customer-add-button">
+                        <i class = "fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+	</body>
+    <script type = "text/javascript">
+        //Copy customer id to clipboard
+        function CopyFunction(){
+            var inventory_search_ids = "{{ inventory_search_ids }}";
+            for (let i = 0; i < inventory_search_ids.length; i++){
+                var element_name = "customermodify-id-" + inventory_search_ids[i];
+                var copy_text = document.getElementById(element_name);
+                if (copy_text == undefined){
+                    continue;
+                }else{
+                    break;
+                }
+            }
+            var text_area = document.createElement("textarea");
+            text_area.value = copy_text.text;
+            document.body.appendChild(text_area);
+            text_area.select();
+            document.execCommand("Copy");
+            text_area.remove();
+            alert("customer id copied");
+        }
+
+        //Keep results div hidden until query
+        var results = "{{ customers_search_results }}";
+        if (results == "[]"){
+            document.getElementsByClassName("searchresults-container")[0].style.visibility = "hidden";
+        }
+
+        //Operation success indicator
+        var error = "{{ error }}";
+        if (error == "none"){
+            //pass
+        }else{
+            window.alert(error);
+        }
+    </script>
+</html>

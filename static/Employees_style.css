@@ -1,0 +1,281 @@
+body{
+	background-color: #EEEEEE;
+	margin: 0;
+	overflow-y: hidden;
+}
+
+.header-container{
+    background-color: #2D2D2D;
+    height: 4em;
+    width: 100%;
+    position: fixed;
+    display: grid;
+    grid-template-columns: 5% 95%;
+    top: 0;
+}
+
+.nav-container{
+    background-color: #2D2D2D;
+    width: 55%;
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+}
+
+.nav-home-button, .nav-recordsale-button, .nav-customers-button, .nav-inventory-button, .nav-employees-button, .nav-suppliers-button, .nav-settings-button, .nav-support-button, .nav-logout-button{
+	color: #ECF0F1;
+	height: 2.9em;
+	width: 5.2em;
+	padding: 0.4em;
+	padding-top: 0.6em;
+	padding-bottom: 0.5em;
+	text-align: center;
+	outline: none;
+	text-decoration: none;
+}
+
+.nav-employees-button{
+	background-color: #EEEEEE;
+	color: #1A1A1A;
+}
+
+.nav-home-button:hover, .nav-recordsale-button:hover, .nav-customers-button:hover, .nav-inventory-button:hover, .nav-suppliers-button:hover, .nav-settings-button:hover, .nav-support-button:hover, .nav-logout-button:hover{
+	background-color: #EEEEEE;
+	color: #1A1A1A;
+}
+
+.nav-button-label{
+	font-size: 0.8em;
+	font-family: "Verdana", monospace;
+}
+
+.logo-container{
+	margin-left: 1em;
+}
+
+#logo {
+	margin-top: 0.7em;
+	margin-left: 1.2em;
+}
+
+.logo-name{
+	color: #11c535;
+	font-size: 1.4em;
+	font-family: "Comfortaa";
+}
+
+#icon{
+	font-size: 1.3em;
+}
+
+.search-container{
+	background-color: transparent;
+	color: #11c535;
+	height: auto;
+	width: 25em;
+	margin-top: 4.5em;
+	margin-left: 42em;
+}
+
+.search{
+	display: flex;
+	justify-content: space-between;
+}
+
+.search-textbox{
+	background-color: transparent;
+	color: #11c535;
+	width: 10em;
+	font-size: 1.5em;
+	font-family: "Ubuntu", monospace;
+	outline: none;
+	border: 0.15em solid #11c535;
+	border-radius: 0.2em;
+}
+
+.search-filter-dropdown{
+	background-color: transparent;
+	color: #11c535;
+	width: 4em;
+	font-size: 1.5em;
+	font-family: "Ubuntu", monospace;
+	border: 0.15em solid #11c535;
+	border-radius: 0.2em;
+}
+
+option{
+	background-color: #EEEEEE;
+}
+
+.employee-search-button{
+	background-color: #EEEEEE;
+	color: #11c535;
+	padding-top: 0.1em;
+	padding-left: 0.4em;
+	padding-bottom: 0.1em;
+	font-size: 1.3em;
+	font-family: "Ubuntu", monospace;
+	border: 0.15em solid #11c535;
+	border-radius: 0.4em;
+}
+
+.employee-search-button:hover{
+	background-color: #11c535;
+	color: #EEEEEE;
+}
+
+.employeeadd-container{
+	background-color: transparent;
+	height: 35em;
+	width: 30em;
+	padding: 1em;
+	margin-top: -37em;
+	margin-left: 3em;
+}
+
+.employeeadd-image{
+	color: #1A1A1A;
+	width: 13em;
+	font-size: 1em;
+}
+
+.employeeadd-image-label, .employeeadd-id-label, .employeeadd-name-label, .employeeadd-position-label{
+	color: #1A1A1A;
+	font-size: 0.95em;
+	font-family: "Verdana", monospace;
+	margin-top: 0.6em;
+}
+
+.categorycolor-container, .sizeflavour-container{
+	width: 13em;
+	display: flex;
+	justify-content: space-between;
+}
+
+.employeeadd-id-textbox, .employeeadd-name-textbox, .employeeadd-position-textbox{
+	background-color: transparent;
+	color: #1A1A1A;
+	width: 10em;
+	font-size: 1.2em;
+	font-family: "Ubuntu", monospace;
+	margin-top: -0.8em;
+	border: none;
+	border-bottom: 0.15em solid #1A1A1A;
+}
+
+.searchresults-container{
+	background-color: transparent;
+	color: #EEEEEE;
+	height: 33.5em;
+	width: 65em;
+	margin-top: 0.2em;
+	margin-left: 19em;
+	font-size: 1em;
+	overflow-y: scroll;
+	display: grid;
+	grid-template-columns: 33.33% 33.33% 33.33%;
+}
+
+.searchresults-container::-webkit-scrollbar{
+	background-color: transparent;
+	width: 0.6em;
+}
+
+.searchresults-container::-webkit-scrollbar-thumb{
+	background-color: #272727;
+	border-radius: 2em;
+}
+
+.searchresult-container{
+	background-color: #272727;
+	height: 15em;
+	width: 19em;
+	padding: 1em;	
+	margin-top: 0.5em;
+	display: grid;
+	grid-template-columns: 80% 20%;
+	border-radius: 0.4em; 
+}
+
+.searchresult-line{
+	height: 0.4em;
+	width: 17.5em;
+	color: #34E0C4;
+	border: none;
+}
+
+.employee-image{
+	height: 5.1em;
+	width: 7em;
+	margin-left: -2.7em;
+	margin-top: -0.8em;
+}
+
+.employeemodify-id-container, .employeemodify-name-container, .employeemodify-position-container{
+	width: 18em;
+	margin-top: 1.5em;
+}
+
+.employeemodify-id-label, .employeemodify-id, .employeemodify-name-label, .employeemodify-position-label{
+	font-size: 1em;
+	font-family: "Verdana", monospace;
+}
+
+.employeemodify-id-textbox, .employeemodify-name-textbox, .employeemodify-position-textbox{
+	background-color: transparent;
+	color: #EEEEEE;
+	width: 10em;
+	font-size: 1em;
+	font-family: "Verdana", monospace;
+	border: none;
+	border-bottom: 0.1em solid #EEEEEE;
+}
+
+.employeemodify-name-textbox{
+	width: 7em;
+}
+
+.employeemodify-recordyear-textbox{
+	width: 2.5em;
+}
+
+.employeemodify-recordmonth-textbox, .employeemodify-recordday-textbox{
+	width: 1.5em;
+}
+
+.employee-add-button, .employee-delete-button, .employee-modifyconfirm-button{
+	background-color: transparent;
+	font-size: 1.1em;
+	margin-top: 1.2em;
+	border-radius: 0.4em;
+}
+
+.employee-delete-button{
+	color: #FF0000;
+	border: 0.15em solid #FF0000;
+}
+
+.employee-delete-button:hover{
+	background-color: #FF0000;
+	color: #EEEEEE;
+}
+
+.employee-modifyconfirm-button{
+	color: #0A7CD1;
+	border: 0.15em solid #0A7CD1;
+}
+
+.employee-modifyconfirm-button:hover{
+	background-color: #0A7CD1;
+	color: #EEEEEE;
+} 
+
+.employee-add-button{
+	color: #11c535;
+	border: 0.15em solid #11c535;
+}
+
+.employee-add-button:hover{
+	background-color: #11c535;
+	color: #EEEEEE;
+}

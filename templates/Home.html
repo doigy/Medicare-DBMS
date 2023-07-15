@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang = 'en'>
+	<head>
+  		<title>
+            {% block title %} Home {% endblock %}
+        </title>
+        <meta charset = "UTF-8">
+        <meta name = "description" content = "SyserRetail - retail management system">
+        <meta name = "keywords" content = "HTML,CSS,XML,JavaScript">
+        <meta name = "author" content = "SyserRetail">
+        <meta name = "viewport" content = "width = 1450"/>
+    	<link rel = "stylesheet" href = "{{ url_for('static', filename = 'Home_style.css') }}"/>
+        <script src="https://kit.fontawesome.com/141a332d2a.js" crossorigin="anonymous"></script>
+        <link rel = "stylesheet" href = "https://fonts.googleapis.com/css?family=Comfortaa|Roboto">
+  	</head>
+    <div class = "header-container">
+        <div class="logo-container">
+            <i class="fa-solid fa-capsules fa-2xl" style="color: #11c535;" id = "logo"></i>
+            <span class="logo-name">Medicare</span>
+        </div>
+        <div class = "nav-container">
+            <a href = "{{ url_for('Home', login_token = login_token) }}" class = "nav-home-button" title = "home">
+                <i class = "fas fa-home" id = "icon"></i>
+                <div>
+                    <span class = "nav-button-label">home</span>
+                </div>
+            </a>
+            <a href = "{{ url_for('Record_sale', login_token = login_token) }}" class = "nav-recordsale-button" title = "record sale">
+                <i class = "fas fa-cash-register" id = "icon"></i>
+                <div>
+                    <span class = "nav-button-label">POS</span>
+                </div>
+            </a>
+            <a href = "{{ url_for('Customers', login_token = login_token) }}" class = "nav-customers-button" title = "customers">
+                <i class = "fa-solid fa-basket-shopping" id = "icon"></i>
+                <div>
+                    <span class = "nav-button-label">customers</span>
+                </div>
+            </a>
+            <a href = "{{ url_for('Inventory', login_token = login_token) }}" class = "nav-inventory-button" title = "inventory">
+                <i class = "fas fa-boxes" id = "icon"></i>
+                <div>
+                    <span class = "nav-button-label">inventory</span>
+                </div>
+            </a>
+            <a href = "{{ url_for('Suppliers', login_token = login_token) }}" class = "nav-suppliers-button" title = "suppliers">
+                <i class = "fa-solid fa-truck" id = "icon"></i>
+                <div>
+                    <span class = "nav-button-label">suppliers</span>
+                </div>
+            </a>
+            <a href = "{{ url_for('Employees', login_token = login_token) }}" class = "nav-employees-button" title = "employees">
+                <i class = "fa-solid fa-users" id = "icon"></i>
+                <div>
+                    <span class = "nav-button-label">employees</span>
+                </div>
+            </a>
+            <a href = "{{ url_for('Settings', login_token = login_token) }}" class = "nav-settings-button" title = "settings">
+                <i class = "fas fa-cog" id = "icon"></i>
+                <div>
+                    <span class = "nav-button-label">settings</span>
+                </div>
+            </a>
+            <a href = "{{ url_for('Logout') }}" class = "nav-logout-button" title = "log out">
+                <i class = "fas fa-sign-out-alt" id = "icon"></i>
+                <div>
+                    <span class = "nav-button-label">logout</span>
+                </div>
+            </a>
+        </div>
+    </div>
+    <body>
+        <form method = "POST" action = "{{ url_for('Home_post', login_token = login_token) }}">
+            <div class="closingtime-summarybutton-container">
+                <p class = "timetillclosing-container">TIME TILL CLOSING:  <span id = "timetillclosing-value"></span></p>
+                <button type = "submit" name = "buttonpressed" value = "create" class = "createsummary-button" title = "open">
+                    Create Summary Button
+                </button>
+            </div>
+            <div class = "dashboarddata-container">
+                <div class = "dashboarddata">
+                    <div class = "dashboarddata-value">
+                        <p class = "dashboarddata-heading">UPDATED</p>
+                        <span class = "dashboarddata-data-value" id = "dashboarddata-date"></span>
+                    </div>
+                    <div class = "dashboarddata-value">
+                        <p class = "dashboarddata-heading">SELL THROUGH</p>
+                        <p class = "dashboarddata-data-value">{{ dashboard_data[0] }}%</p>
+                    </div>
+                    <div class = "dashboarddata-value">
+                        <p class = "dashboarddata-heading">AVERAGE TRANSACTION</p>
+                        <p class = "dashboarddata-data-value">{{ dashboard_data[1] }}Rs</p>
+                    </div>
+                    <div class = "dashboarddata-value">
+                        <p class = "dashboarddata-heading">AVERAGE TRANSACTION QTY</p>
+                        <p class = "dashboarddata-data-value">{{ dashboard_data[2] }}</p>
+                    </div>
+                    <div class = "dashboarddata-value">
+                        <p class = "dashboarddata-heading">STOCK BOUGHT</p>
+                        <p class = "dashboarddata-data-value">{{ dashboard_data[3] }}</p>
+                    </div>
+                    <div class = "dashboarddata-value">
+                        <p class = "dashboarddata-heading">STOCK SOLD</p>
+                        <p class = "dashboarddata-data-value">{{ dashboard_data[4] }}</p>
+                    </div>
+                    <div class = "dashboarddata-value">
+                        <p class = "dashboarddata-heading">TOTAL SALES</p>
+                        <p class = "dashboarddata-data-value">{{ dashboard_data[5] }}Rs</p>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div class = "dashboarddata-graph-container">
+            <embed type = "image/svg+xml" src = {{graph_data|safe}} class = "dashboarddata-graph"/>
+        </div>
+        <div class = "dashboarddata-other-container">
+            <div class = "itemstocklow-container">
+                <h1 class = "itemstocklow-heading">Low Stock Alerts</h1>
+                <hr/>
+                <div class = "itemstocklow-info-container">
+                    {% for i in stock_low %}
+                        <div class = "itemstocklow-info">
+                            {{ i[0] }} - {{ i[2] }} items remaining
+                            <br/>
+                            {{ i[1] }}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class = "financialsummaries-container">
+                <h1 class = "financialsummaries-heading">Financial Summaries</h1>
+                <hr/>
+                <form method = "POST" action = "{{ url_for('Home_post', login_token = login_token) }}">
+                    <div class = "financialsummaries-info-container">
+                        {% for i in financial_summaries %}
+                            <div class = "financialsummaries-info">
+                                {{ i }}
+                                <button type = "submit" name = "buttonpressed" value = "open{{ i }}" class = "opensummary-button" title = "open">
+                                    view
+                                </button>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </form>
+            </div>
+            <div class = "itempopularity-container">
+                <div class = "mostsellingitem-container">
+                    <h1 class = "mostsellingitem-heading">Most Selling Item</h1>
+                    <hr/>
+                    <div class = "mostsellingitem-info-container">
+                        <div class = "mostsellingitem-info">
+                            id: {{ most_selling_item_id }}
+                            <br/>
+                            name: {{ most_selling_item_name }}
+                        </div>
+                    </div>
+                </div>
+                <div class = "leastsellingitem-container">
+                    <h1 class = "leastsellingitem-heading">Least Selling Item</h1>
+                    <hr/>
+                    <div class = "leastsellingitem-info-container">
+                        <div class = "leastsellingitem-info">
+                            id: {{ least_selling_item_id }}
+                            <br/>
+                            name: {{ least_selling_item_name }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+    <script type = "application/javascript">
+        var currentdate = new Date(); 
+        var datetime = currentdate.getDate() + "/" + (currentdate.getMonth() + 1)  + "/" + currentdate.getFullYear() + '</br>' + currentdate.getHours() + ":" + currentdate.getMinutes() + ":" + currentdate.getSeconds();
+
+        document.getElementById('dashboarddata-date').innerHTML = datetime;
+
+        const month = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+        var today = new Date();
+        var dd = String(today.getDate()).padStart(2, '0');
+        var mm = String(month[today.getMonth() + 1]).padStart(2, '0'); //January is 0!
+        var yyyy = today.getFullYear();
+
+        // Set the date we're counting down to
+        var closing_time = new Date(mm + " " + dd + ', ' + yyyy + " {{ closing_time }}").getTime();
+
+        // Update the count down every 1 second
+        var x = setInterval(function() {
+
+            // Get today's date and time
+            var now = new Date().getTime();
+
+            // Find the distance between now and the count down date
+            var distance = closing_time - now;
+
+            // Time calculations for days, hours, minutes and seconds
+            var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            // Display the result in the element with id="demo"
+            document.getElementById("timetillclosing-value").innerHTML = hours + ":" + minutes + ":" + seconds;
+            
+            if (distance < 0) {
+                clearInterval(x);
+                document.getElementById("timetillclosing-value").innerHTML = "CLOSED";
+            }
+        }, 1000);
+
+        var error = "{{ error }}";
+        if (error == "none"){
+            //pass
+        }else{
+            window.alert(error);
+        }
+    </script>
+</html>

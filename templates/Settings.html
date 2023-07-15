@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang = 'en'>
+	<head>
+		<title>
+			{% block title %} Settings {% endblock %}
+		</title>
+		<meta charset = "UTF-8">
+        <meta name = "description" content = "SyserRetail - retail management system">
+        <meta name = "keywords" content = "HTML,CSS,XML,JavaScript">
+        <meta name = "author" content = "SyserRetail">
+		<meta name = "viewport" content = "width = 1450"/>
+		<link rel = "stylesheet" href = "{{ url_for('static', filename = 'Settings_style.css') }}">
+		<script src="https://kit.fontawesome.com/141a332d2a.js" crossorigin="anonymous"></script>
+        <link rel = "stylesheet" href = "https://fonts.googleapis.com/css?family=Ubuntu|Comfortaa|Roboto">
+	</head>
+	<div class = "header-container">
+        <div class="logo-container">
+            <i class="fa-solid fa-capsules fa-2xl" style="color: #11c535;" id = "logo"></i>
+            <span class="logo-name">Medicare</span>
+        </div>
+        <div class = "nav-container">
+            <a href = "{{ url_for('Home', login_token = login_token) }}" class = "nav-home-button" title = "home">
+                <i class = "fas fa-home" id = "icon"></i>
+                <div>
+                    <span class = "nav-button-label">home</span>
+                </div>
+            </a>
+            <a href = "{{ url_for('Record_sale', login_token = login_token) }}" class = "nav-recordsale-button" title = "record sale">
+                <i class = "fas fa-cash-register" id = "icon"></i>
+                <div>
+                    <span class = "nav-button-label">POS</span>
+                </div>
+            </a>
+            <a href = "{{ url_for('Customers', login_token = login_token) }}" class = "nav-customers-button" title = "customers">
+                <i class = "fa-solid fa-basket-shopping" id = "icon"></i>
+                <div>
+                    <span class = "nav-button-label">customers</span>
+                </div>
+            </a>
+            <a href = "{{ url_for('Inventory', login_token = login_token) }}" class = "nav-inventory-button" title = "inventory">
+                <i class = "fas fa-boxes" id = "icon"></i>
+                <div>
+                    <span class = "nav-button-label">inventory</span>
+                </div>
+            </a>
+            <a href = "{{ url_for('Suppliers', login_token = login_token) }}" class = "nav-suppliers-button" title = "suppliers">
+                <i class = "fa-solid fa-truck" id = "icon"></i>
+                <div>
+                    <span class = "nav-button-label">suppliers</span>
+                </div>
+            </a>
+            <a href = "{{ url_for('Employees', login_token = login_token) }}" class = "nav-employees-button" title = "employees">
+                <i class = "fa-solid fa-users" id = "icon"></i>
+                <div>
+                    <span class = "nav-button-label">employees</span>
+                </div>
+            </a>
+            <a href = "{{ url_for('Settings', login_token = login_token) }}" class = "nav-settings-button" title = "settings">
+                <i class = "fas fa-cog" id = "icon"></i>
+                <div>
+                    <span class = "nav-button-label">settings</span>
+                </div>
+            </a>
+            <a href = "{{ url_for('Logout') }}" class = "nav-logout-button" title = "log out">
+                <i class = "fas fa-sign-out-alt" id = "icon"></i>
+                <div>
+                    <span class = "nav-button-label">logout</span>
+                </div>
+            </a>
+        </div>
+    </div>
+	<body>
+		<form method = "POST" name = "settingsform">
+        	<div class = "main-container">
+        		<div class = "settings-container">
+		        	<div class = "clearholdingtokens-container">
+	            		<span class = "clearholdingtokens-label">Clear holding tokens</span>
+	            		<button type = "submit" value = "clearholdingtokens" class = "delete-button" name = "button">
+		                	<i class = "fas fa-trash-alt"></i>
+		            	</button>
+		            </div>
+		        	<div class = "cleardatabases-container">
+	            		<span class = "cleardatabases-label">Clear databases</span>
+	            		<button type = "submit" value = "cleardatabases" class = "delete-button" name = "button">
+		                	<i class = "fas fa-trash-alt"></i>
+		            	</button>
+		            </div>
+		            <div class = "clearreceipts-container">
+		            	<span class = "clearreceipts-label">Clear receipts</span>
+		            	<button type = "submit" value = "clearreceipts" class = "delete-button" name = "button">
+		                	<i class = "fas fa-trash-alt"></i>
+		            	</button>
+		            </div>
+		            <br/>
+		        	<div class = "changeclosingtime-container">
+			        	<p class = "closingtime-label">Closing time</p>
+						<select name = "closingtime" class = "closingtime-dropdown">
+							<option value = "00:00:00">12:00 AM</option>
+						    <option value = "01:00:00">01:00 AM</option>
+						    <option value = "02:00:00">02:00 AM</option>
+						    <option value = "03:00:00">03:00 AM</option>
+						    <option value = "04:00:00">04:00 AM</option>
+						    <option value = "05:00:00">05:00 AM</option>
+						    <option value = "06:00:00">06:00 AM</option>
+						    <option value = "07:00:00">07:00 AM</option>
+						    <option value = "08:00:00">08:00 AM</option>
+						    <option value = "09:00:00">09:00 AM</option>
+						    <option value = "10:00:00">10:00 AM</option>
+						    <option value = "11:00:00">11:00 AM</option>
+						    <option value = "12:00:00">12:00 PM</option>
+						    <option value = "13:00:00">01:00 PM</option>
+						    <option value = "14:00:00">02:00 PM</option>
+						    <option value = "15:00:00">03:00 PM</option>
+						    <option value = "16:00:00">04:00 PM</option>
+						    <option value = "17:00:00">05:00 PM</option>
+						    <option value = "18:00:00">06:00 PM</option>
+						    <option value = "19:00:00">07:00 PM</option>
+						    <option value = "20:00:00">08:00 PM</option>
+						    <option value = "21:00:00">09:00 PM</option>
+						    <option value = "22:00:00">10:00 PM</option>
+						    <option value = "23:00:00">11:00 PM</option>
+						</select>
+		                <button type = "submit" value = "changeclosingtime" class = "modifysettings-button" name = "button">
+		                	<i class = "fas fa-arrow-right"></i>
+		            	</button>
+		            </div>
+		            <div class = "salestax-container">
+	                	<p class = "salestax-label">Sales tax</p>
+	                	<input type = "text" class = "salestax-textbox" name = "salestax" value = "{{ sales_tax }}"/>
+	                	<span class = "salestax-percentage-label">%</span>
+	                	<button type = "submit" value = "changesalestax" class = "modifysettings-button" name = "button">
+		                	<i class = "fas fa-arrow-right"></i>
+		            	</button>
+	            	</div>
+		            <div class = "refundvalidlimit-container">
+	                	<p class = "refundvalidlimit-label">Refund validity limit</p>
+	                	<input type = "text" class = "refundvalidlimit-textbox" name = "refundvalidlimit" value = "{{ refund_valid_limit }}"/>
+	                	<span class = "refundvalidlimit-label">days</span>
+	                	<button type = "submit" value = "changerefundvalidlimit" class = "modifysettings-button" name = "button">
+		                	<i class = "fas fa-arrow-right"></i>
+		            	</button>
+	            	</div>
+	            </div>
+            	<div class = "shop-address-contact-container">
+            		<div class = "shopaddress-container">
+	                	<p class = "shopaddress-label">Shop address</p>
+	                	<textarea class = "shopaddress-textarea" name = "shopaddress" cols = "50" rows = "4">{{shop_address}}</textarea>
+	                	<button type = "submit" value = "changeshopaddress" class = "modifysettings-button" name = "button">
+		                	<i class = "fas fa-arrow-right"></i>
+		            	</button>
+            		</div>
+            		<div class = "shopcontact-container">
+	                	<p class = "shopcontact-label">Shop contact</p>
+	                	<textarea class = "shopcontact-textarea" name = "shopcontact" cols = "50" rows = "4">{{shop_contact}}</textarea>
+	                	<button type = "submit" value = "changeshopcontact" class = "modifysettings-button" name = "button">
+		                	<i class = "fas fa-arrow-right"></i>
+		            	</button>
+	            	</div>
+	            	<div class = "shopname-container">
+	                	<p class = "shopname-label">Shop name</p>
+	                	<input type = "text" class = "shopname-textbox" name = "shopname" value = "{{ shop_name }}"/>
+	                	<button type = "submit" value = "changeshopname" class = "modifysettings-button" name = "button">
+		                	<i class = "fas fa-arrow-right"></i>
+		            	</button>
+		            	<button type = "submit" value = "generatetestreceipt" class = "generatetestreceipt-button" name = "button">
+		                	test receipt
+		            	</button>
+	            	</div>
+	            </div>
+	        </div>
+		</form>
+	</body>
+	<script type = "text/javascript">
+		var currentclosingtime = "{{ current_closingtime }}";
+		var closingtimeelement = document.getElementsByClassName("closingtime-dropdown")[0];
+
+		for (i = 0; i < closingtimeelement.options.length; i++){
+			if (closingtimeelement.options[i].value == currentclosingtime){
+				closingtimeelement.options[i].selected = true;
+				break;
+			}else{
+				//pass
+			}
+		}
+
+		backuptimeelement = null;
+
+		var error = "{{ error }}";
+		if (error == "none"){
+			//pass
+		}else{
+			window.alert(error);
+		}
+	</script>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Login</title>
+		<meta name = "viewport" content = "width = 1450"/>
+		<link rel = "stylesheet" href = "{{ url_for('static', filename = 'Login_style.css') }}">
+		<script src="https://kit.fontawesome.com/141a332d2a.js" crossorigin="anonymous"></script>
+		<link rel = "stylesheet" href = "https://fonts.googleapis.com/css?family=Comfortaa|Roboto">
+		<link rel="icon" type="image/png" href="https://fontawesome.com/icons/capsules?f=classic&s=solid" sizes="16x16">
+	</head>
+	<body>
+		<div class = "main-container">
+			<div class = "userentry-companylogo-container">
+				<div class = "logo-container">
+            		<i class="fa-solid fa-capsules fa-2xl" style="color: #11c535;" id = "logo"></i>
+            		<p class = "logo-name">Medicare</p>
+		        </div>
+				<div></div>
+				<div class = "userentry-container">
+					<form method = "POST">
+						<p class = "username-entry-label">username</p>
+						<input type = "text" name = "usernameentry" class = "username-entry-textbox" autocomplete = "off"/>
+						<button type = "submit" value = "login" class = "login-button" title = "login">
+							<i class = "fas fa-sign-in-alt"></i>
+						</button>
+						<div class = "resetpasswordusername-button-container">
+							<a href = "http://{{ ip_address }}:7500/reset" class = "resetpasswordusername-button">
+								forgot password or user name?
+							</a>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type = "text/javascript">
+		var error = "{{ error }}";
+		if (error == "none"){
+			//pass
+		}else{
+			window.alert(error);
+		}
+	</script>
+</html>

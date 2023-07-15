@@ -1,0 +1,259 @@
+body{
+	background-color: #EEEEEE;
+	margin: 0;
+	overflow-x: hidden;
+}
+
+body::-webkit-scrollbar{
+	background-color: #2D2D2D;
+	height: 10em;
+	width: 0.6em;
+}
+
+body::-webkit-scrollbar-thumb{
+	background-color: #11c535;
+}
+
+.header-container{
+    background-color: #2D2D2D;
+    height: 4em;
+    width: 100%;
+    position: fixed;
+    display: grid;
+    grid-template-columns: 5% 95%;
+    top: 0;
+}
+
+.nav-container{
+    background-color: #2D2D2D;
+    width: 55%;
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+}
+
+.nav-home-button, .nav-recordsale-button, .nav-customers-button, .nav-inventory-button, .nav-suppliers-button, .nav-employees-button, .nav-settings-button, .nav-support-button, .nav-logout-button{
+	color: #ECF0F1;
+	height: 2.9em;
+	width: 5.2em;
+	padding: 0.4em;
+	padding-top: 0.6em;
+	padding-bottom: 0.5em;
+	text-align: center;
+	outline: none;
+	text-decoration: none;
+}
+
+.nav-home-button{
+	background-color: #EEEEEE;
+	color: #1A1A1A;
+}
+
+.nav-inventory-button:hover, .nav-recordsale-button:hover, .nav-customers-button:hover, .nav-suppliers-button:hover, .nav-employees-button:hover, .nav-settings-button:hover, .nav-support-button:hover, .nav-logout-button:hover{
+	background-color: #EEEEEE;
+	color: #1A1A1A;
+}
+
+.nav-button-label{
+	font-size: 0.8em;
+	font-family: "Verdana", monospace;
+}
+
+.logo-container{
+	margin-left: 1em;
+}
+
+#logo {
+	margin-top: 0.7em;
+	margin-left: 1.2em;
+}
+
+.logo-name{
+	color: #11c535;
+	font-size: 1.4em;
+	font-family: "Comfortaa";
+}
+
+#icon{
+	font-size: 1.3em;
+}
+
+.closingtime-summarybutton-container{
+	width: auto;
+	display: inline-block;
+}
+
+.timetillclosing-container{
+	color: #11c535;
+	width: 28em;
+	font-size: 1.1em;
+	font-family: "Comfortaa";
+	font-weight: bold;
+	letter-spacing: 0.2em;
+	margin-top: 5em;
+	margin-left: 3em;
+	display: inline-block;
+}
+
+.dashboarddata{
+	height: 20em;
+	width: 78.6em;
+	margin-top: 2em;
+	margin-left: 3em;
+	display: flex;
+	justify-content: space-between;
+}
+
+.dashboarddata-value{
+	background-color: transparent;
+	color: #11c535;
+	height: 6em;
+	width: 8.5em;
+	padding: 0.5em;
+	font-size: 1em;
+	font-family: "Comfortaa";
+	font-weight: bold;
+	letter-spacing: 0.15em;
+	padding-bottom: 0.5em;
+	overflow-x: scroll;
+	overflow-y: hidden;
+}
+
+.dashboarddata-value::-webkit-scrollbar{
+	background-color: transparent;
+	height: 0.3em;
+}
+
+.dashboarddata-value::-webkit-scrollbar-thumb{
+	background-color: #272727;
+	border-radius: 0.1em;
+}
+
+.dashboarddata-value-line{
+	background-color: #1A1A1A;
+	width: 0.15em;
+	border: none;
+}
+
+.dashboarddata-heading{
+	font-size: 0.75em;
+	font-weight: bold;
+	letter-spacing: 0.25em;
+}
+
+.dashboarddata-data-value{
+	font-size: 1.2em;
+}
+
+.dashboarddata-graph-container{
+	height: 70em;
+	width: 75em;
+	margin-top: -13em;
+	margin-left: 3em;
+}
+
+.dashboarddata-other-container{
+	width: 80em;
+	display: flex;
+	justify-content: space-between;
+	margin-top: -13em;
+	margin-left: 2.5em;
+}
+
+.createsummary-button{
+	background-color: #EEEEEE;
+	color: #11c535;
+	height: 2em;
+	width: 14em;
+	margin-left: 4em;
+	font-size: 0.9em;
+	font-family: "Roboto";
+	border: 0.2em solid #11c535;
+}
+
+.createsummary-button:hover{
+	background-color: #11c535;
+	color: #EEEEEE;
+}
+
+.itemstocklow-container{
+	height: 22em;
+	width: 20em;
+	padding: 1em;
+	padding-top: 0.3em;
+	border: 0.2em solid #11c535;
+	overflow-y: auto;
+}
+
+.itemstocklow-container::-webkit-scrollbar{
+	width: 0.4em;
+}
+
+.itemstocklow-container::-webkit-scrollbar-thumb{
+	background-color: #1A1A1A;
+}
+
+.itemstocklow-heading, .financialsummaries-heading, .sellingrecord-heading, .mostsellingitem-heading, .leastsellingitem-heading{
+	font-size: 1.1em;
+	font-family: "Roboto";
+	letter-spacing: 0.2em;
+	text-align: center;
+}
+
+.itemstocklow-info-container, .financialsummaries-info-container, .sellingrecord-info-container, .mostsellingitem-info-container, .leastsellingitem-info-container{
+	font-size: 1em;
+	font-family: "Verdana";
+}
+
+.itemstocklow-info, .financialsummaries-info, .sellingrecord-info, .mostsellingitem-info, .leastsellingitem-info{
+	margin-top: 1.2em;
+}
+
+.financialsummaries-container{
+	height: 22em;
+	width: 22em;
+	padding: 1em;
+	padding-top: 0.3em;
+	border: 0.2em solid #11c535;
+	overflow-y: auto;
+	text-align: center;
+}
+
+.financialsummaries-container::-webkit-scrollbar{
+	width: 0.4em;
+}
+
+.financialsummaries-container::-webkit-scrollbar-thumb{
+	background-color: #1A1A1A;
+}
+
+.opensummary-button{
+	background-color: transparent;
+	color: #11c535;
+	height: 1.8em;
+	width: 3.5em;
+	font-size: 0.9em;
+	border: 0.2em solid #11c535;
+	border-radius: 0.4em;
+}
+
+.opensummary-button:hover{
+	background-color: #11c535;
+	color: #EEEEEE;
+}
+
+.itempopularity-container{
+	width: 26em;
+	display: grid;
+	grid-template-rows: 50% 50%;
+	border: 0.2em solid #11c535;
+}
+
+.mostsellingitem-container, .leastsellingitem-container{
+	padding: 1em;
+	padding-top: 0.3em;
+}
+
+.leastsellingitem-container{
+	border-top: 0.2em solid #11c535;	
+}

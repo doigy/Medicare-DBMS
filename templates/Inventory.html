@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang = 'en'>
+	<head>
+		<title>
+            {% block title %} Inventory {% endblock %}
+        </title>
+        <meta charset = "UTF-8">
+        <meta name = "description" content = "SyserRetail - retail management system">
+        <meta name = "keywords" content = "HTML,CSS,XML,JavaScript">
+        <meta name = "author" content = "SyserRetail">
+        <meta name = "viewport" content = "width = 1450"/>
+		<link rel = "stylesheet" href = "{{ url_for('static', filename = 'Inventory_style.css') }}">
+        <script src="https://kit.fontawesome.com/141a332d2a.js" crossorigin="anonymous"></script>
+        <link rel = "stylesheet" href = "https://fonts.googleapis.com/css?family=Ubuntu|Comfortaa|Roboto">
+	</head>
+    <div class = "header-container">
+        <div class="logo-container">
+            <i class="fa-solid fa-capsules fa-2xl" style="color: #11c535;" id = "logo"></i>
+            <span class="logo-name">Medicare</span>
+        </div>
+        <div class = "nav-container">
+            <a href = "{{ url_for('Home', login_token = login_token) }}" class = "nav-home-button" title = "home">
+                <i class = "fas fa-home" id = "icon"></i>
+                <div>
+                    <span class = "nav-button-label">home</span>
+                </div>
+            </a>
+            <a href = "{{ url_for('Record_sale', login_token = login_token) }}" class = "nav-recordsale-button" title = "record sale">
+                <i class = "fas fa-cash-register" id = "icon"></i>
+                <div>
+                    <span class = "nav-button-label">POS</span>
+                </div>
+            </a>
+            <a href = "{{ url_for('Customers', login_token = login_token) }}" class = "nav-customers-button" title = "customers">
+                <i class = "fa-solid fa-basket-shopping" id = "icon"></i>
+                <div>
+                    <span class = "nav-button-label">customers</span>
+                </div>
+            </a>
+            <a href = "{{ url_for('Inventory', login_token = login_token) }}" class = "nav-inventory-button" title = "inventory">
+                <i class = "fas fa-boxes" id = "icon"></i>
+                <div>
+                    <span class = "nav-button-label">inventory</span>
+                </div>
+            </a>
+            <a href = "{{ url_for('Suppliers', login_token = login_token) }}" class = "nav-suppliers-button" title = "suppliers">
+                <i class = "fa-solid fa-truck" id = "icon"></i>
+                <div>
+                    <span class = "nav-button-label">suppliers</span>
+                </div>
+            </a>
+            <a href = "{{ url_for('Employees', login_token = login_token) }}" class = "nav-employees-button" title = "employees">
+                <i class = "fa-solid fa-users" id = "icon"></i>
+                <div>
+                    <span class = "nav-button-label">employees</span>
+                </div>
+            </a>
+            <a href = "{{ url_for('Settings', login_token = login_token) }}" class = "nav-settings-button" title = "settings">
+                <i class = "fas fa-cog" id = "icon"></i>
+                <div>
+                    <span class = "nav-button-label">settings</span>
+                </div>
+            </a>
+            <a href = "{{ url_for('Logout') }}" class = "nav-logout-button" title = "log out">
+                <i class = "fas fa-sign-out-alt" id = "icon"></i>
+                <div>
+                    <span class = "nav-button-label">logout</span>
+                </div>
+            </a>
+        </div>
+    </div>
+	<body>
+        <div class = "search-container">
+            <form method = "POST" action = "{{ url_for('Inventory_search', login_token = login_token) }}">
+                <div class = "search">
+                    <input type = "search" name = "query" class = "search-textbox"/>
+                    <select class = "search-filter-dropdown" name = "filter">
+                        <option value = "null" SELECTED>null</option>
+                        <option value = "id">id</option>
+                        <option value = "stock">stock</option>
+                        <option value = "name">name</option>
+                        <option value = "expiry">expiry date</option>
+                        <option value = "supplier">supplier</option>
+                        <option value = "price">unit sale price</option>
+                    </select>
+                    <button type = "submit" value = "search" class = "item-search-button">
+                        <i class = "fas fa-search"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+        <form method = "POST" action = "{{ url_for('Inventory_mod', login_token = login_token) }}">
+            <div class = "searchresults-container">
+                {% for i in inventory_search_results %}
+                    <div class = "searchresult-container">
+                        <div class = "searchresult">
+                            <div class = "itemmodify-id-container">
+                                <span class = "itemmodify-id-label">id :</span>
+                                <span type = "text" class = "itemmodify-id" id = "itemmodify-id-{{ i[0] }}">{{ i[0] }}</span>
+                            </div>
+                            <div class = "itemmodify-name-container">
+                                <span class = "itemmodify-name-label">name : </span>
+                                <input type = "text" class = "itemmodify-name-textbox" name = "itemmodifyname{{ i[0] }}" value = "{{ i[1] }}"/>
+                            </div>
+                            <div class = "itemmodify-stock-container">
+                                <span class = "itemmodify-stock-label">current stock : {{ i[2] }}</span>
+                            </div>
+                            <div class = "itemmodify-unitsaleprice-container">
+                                <span class = "itemmodify-unitsaleprice-label">sale price : </span>
+                                <input type = "text" class = "itemmodify-unitsaleprice-textbox" name = "itemmodifyunitsaleprice{{ i[0] }}" value = "{{ i[3] }}"/><span class = "itemmodify-rs-label">Rs</span>
+                            </div>
+                            <div class = "itemmodify-expiry-container">
+                                <span class = "itemmodify-expiry-label">expiry date : </span>
+                                <input type = "text" class = "itemmodify-expiry-textbox" name = "itemmodifyexpiry{{ i[0] }}" value = "{{ i[4] }}"/>
+                            </div>
+                            <div class = "itemmodify-supplier-container">
+                                <span class = "itemmodify-supplier-label">supplier : </span>
+                                <input type = "text" class = "itemmodify-supplier-textbox" name = "itemmodifysupplier{{ i[0] }}" value = "{{ i[5] }}"/>
+                            </div>
+                            <button type = "submit" name = "itemmodifyconfirm" value = "delete{{ i[0] }}" class = "item-delete-button">
+                                <i class = "fas fa-trash-alt"></i>
+                            </button>
+                            <button type = "submit" name = "itemmodifyconfirm" value = "{{ i[0] }}" class = "item-modifyconfirm-button">
+                                <i class = "fas fa-arrow-right"></i>
+                            </button>
+                            <div class = "recordstocklost-container">
+                                <span class = "recordstocklost-label">stock lost : </span>
+                                <input type = "text" class = "recordstocklost-textbox" name = "stocklost{{ i[0] }}"/>
+                                <button type = "submit" name = "itemmodifyconfirm" value = "recordstocklost{{ i[0] }}" class = "recordstocklost-button">
+                                    <i class = "fas fa-minus"></i>
+                                </button>
+                            </div>
+                            <div class = "itemmodify-newstockbought-container">
+                                <span class = "itemmodify-newstockbought-label">stock bought : </span>
+                                <input type = "number" class = "itemmodify-newstockbought-textbox" name = "itemmodifynewstockbought{{ i[0] }} "/>
+                                <button type = "submit" name = "itemmodifyconfirm" value = "recordbuy{{ i[0] }}" class = "item-recordbuy-button">
+                                    <i class = "fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class = "result-image">
+                            <img src = "/static/item-images/{{ i[0] }}.jpg" class = "item-image" alt = "item image"/>
+                            <a href = "/static/item-barcodes/{{ i[0] }}.png" download>
+                                <img src = "/static/item-barcodes/{{ i[0] }}.png" class = "barcodedownload-image" alt = "item barcode image">
+                            </a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </form>
+        <div class = "itemadd-container">
+            <form method = "POST" action = "{{ url_for('Inventory_mod', login_token = login_token) }}" enctype = "multipart/form-data">
+                <div class = "itemadd">
+                    <p class = "itemadd-image-label">item image</p>
+                    <input type = "file" class = "itemadd-image" name = "itemaddimage" accept = "image/*"/>
+                    <p class = "itemadd-id-label">item id</p>
+                    <input type = "number" class = "itemadd-id-textbox" name = "itemaddid" value = "{{ new_id }}"/>
+                    <p class = "itemadd-name-label">name</p>
+                    <input type = "text" class = "itemadd-name-textbox" name = "itemaddname"/>
+                    <p class = "itemadd-stock-label">stock</p>
+                    <input type = "text" class = "itemadd-stock-textbox" name = "itemaddstock"/>
+                    <p class = "itemadd-unitsaleprice-label">unit sale price</p>
+                    <input type = "text" class = "itemadd-unitsaleprice-textbox" name = "itemaddunitsaleprice"/><span class = "itemadd-rs-label">Rs</span>
+                    <p class = "itemadd-expiry-label">expiry</p>
+                    <input type = "date" class = "itemadd-expiry-textbox" name = "itemaddexpiry"/>
+                    <p class = "itemadd-supplier-label">supplier</p>
+                    <select class = "itemadd-supplier-textbox" name = "itemaddsupplier">
+                        {% for s in suppliers %}
+                            <option value = "{{ s[0] }}">{{ s[0] }}</option>
+                        {% endfor %}
+                    </select>
+                    <br/>
+                    <button type = "submit" name = "itemmodifyconfirm" value = "itemaddconfirm" class = "item-add-button">
+                        <i class = "fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+	</body>
+    <script type = "text/javascript">
+        //Copy item id to clipboard
+        function CopyFunction(){
+            var inventory_search_ids = "{{ inventory_search_ids }}";
+            for (let i = 0; i < inventory_search_ids.length; i++){
+                var element_name = "itemmodify-id-" + inventory_search_ids[i];
+                var copy_text = document.getElementById(element_name);
+                if (copy_text == undefined){
+                    continue;
+                }else{
+                    break;
+                }
+            }
+            var text_area = document.createElement("textarea");
+            text_area.value = copy_text.text;
+            document.body.appendChild(text_area);
+            text_area.select();
+            document.execCommand("Copy");
+            text_area.remove();
+            alert("item id copied");
+        }
+
+        //Keep results div hidden until query
+        var results = "{{ inventory_search_results }}";
+        if (results == "[]"){
+            document.getElementsByClassName("searchresults-container")[0].style.visibility = "hidden";
+        }
+
+        //Operation success indicator
+        var error = "{{ error }}";
+        if (error == "none"){
+            //pass
+        }else{
+            window.alert(error);
+        }
+    </script>
+</html>

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang = 'en'>
+	<head>
+		<title>
+            {% block title %} Suppliers {% endblock %}
+        </title>
+        <meta charset = "UTF-8">
+        <meta name = "description" content = "SyserRetail - retail management system">
+        <meta name = "keywords" content = "HTML,CSS,XML,JavaScript">
+        <meta name = "author" content = "SyserRetail">
+        <meta name = "viewport" content = "width = 1450"/>
+		<link rel = "stylesheet" href = "{{ url_for('static', filename = 'Suppliers_style.css') }}">
+        <script src="https://kit.fontawesome.com/141a332d2a.js" crossorigin="anonymous"></script>
+        <link rel = "stylesheet" href = "https://fonts.googleapis.com/css?family=Ubuntu|Comfortaa|Roboto">
+	</head>
+    <div class = "header-container">
+        <div class="logo-container">
+            <i class="fa-solid fa-capsules fa-2xl" style="color: #11c535;" id = "logo"></i>
+            <span class="logo-name">Medicare</span>
+        </div>
+        <div class = "nav-container">
+            <a href = "{{ url_for('Home', login_token = login_token) }}" class = "nav-home-button" title = "home">
+                <i class = "fas fa-home" id = "icon"></i>
+                <div>
+                    <span class = "nav-button-label">home</span>
+                </div>
+            </a>
+            <a href = "{{ url_for('Record_sale', login_token = login_token) }}" class = "nav-recordsale-button" title = "record sale">
+                <i class = "fas fa-cash-register" id = "icon"></i>
+                <div>
+                    <span class = "nav-button-label">POS</span>
+                </div>
+            </a>
+            <a href = "{{ url_for('Customers', login_token = login_token) }}" class = "nav-customers-button" title = "customers">
+                <i class = "fa-solid fa-basket-shopping" id = "icon"></i>
+                <div>
+                    <span class = "nav-button-label">customers</span>
+                </div>
+            </a>
+            <a href = "{{ url_for('Inventory', login_token = login_token) }}" class = "nav-inventory-button" title = "inventory">
+                <i class = "fas fa-boxes" id = "icon"></i>
+                <div>
+                    <span class = "nav-button-label">inventory</span>
+                </div>
+            </a>
+            <a href = "{{ url_for('Suppliers', login_token = login_token) }}" class = "nav-suppliers-button" title = "suppliers">
+                <i class = "fa-solid fa-truck" id = "icon"></i>
+                <div>
+                    <span class = "nav-button-label">suppliers</span>
+                </div>
+            </a>
+            <a href = "{{ url_for('Employees', login_token = login_token) }}" class = "nav-employees-button" title = "employees">
+                <i class = "fa-solid fa-users" id = "icon"></i>
+                <div>
+                    <span class = "nav-button-label">employees</span>
+                </div>
+            </a>
+            <a href = "{{ url_for('Settings', login_token = login_token) }}" class = "nav-settings-button" title = "settings">
+                <i class = "fas fa-cog" id = "icon"></i>
+                <div>
+                    <span class = "nav-button-label">settings</span>
+                </div>
+            </a>
+            <a href = "{{ url_for('Logout') }}" class = "nav-logout-button" title = "log out">
+                <i class = "fas fa-sign-out-alt" id = "icon"></i>
+                <div>
+                    <span class = "nav-button-label">logout</span>
+                </div>
+            </a>
+        </div>
+    </div>
+	<body>
+        <div class = "search-container">
+            <form method = "POST" action = "{{ url_for('Suppliers_search', login_token = login_token) }}">
+                <div class = "search">
+                    <input type = "search" name = "query" class = "search-textbox"/>
+                    <select class = "search-filter-dropdown" name = "filter">
+                        <option value = "null" SELECTED>null</option>
+                        <option value = "id">id</option>
+                        <option value = "name">name</option>
+                        <option value = "contact">contact number</option>
+                    </select>
+                    <button type = "submit" value = "search" class = "supplier-search-button">
+                        <i class = "fas fa-search"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+        <form method = "POST" action = "{{ url_for('Suppliers_mod', login_token = login_token) }}">
+            <div class = "searchresults-container">
+                {% for i in suppliers_search_results %}
+                    <div class = "searchresult-container">
+                        <div class = "searchresult">
+                            <div class = "suppliermodify-id-container">
+                                <span class = "suppliermodify-id-label">id :</span>
+                                <span type = "text" class = "suppliersmodify-id" id = "suppliermodify-id-{{ i[0] }}">{{ i[0] }}</span>
+                            </div>
+                            <div class = "suppliermodify-name-container">
+                                <span class = "suppliermodify-name-label">name : </span>
+                                <input type = "text" class = "suppliermodify-name-textbox" name = "suppliermodifyname{{ i[0] }}" value = "{{ i[1] }}"/>
+                            </div>
+                            <div class = "suppliermodify-contact-container">
+                                <span class = "suppliermodify-contact-label">contact : </span>
+                                <input type = "text" class = "suppliermodify-contact-textbox" name = "suppliermodifycontact{{ i[0] }}" value = "{{ i[2] }}"/>
+                            </div>
+<!--                             <div class = "supplierodify-recorddate-container">
+                                <span class = "suppliermodify-recordyear-label">year : </span>
+                                <input type = "text" class = "suppliermodify-recordyear-textbox" name = "suppliermodifyrecordyear{{ i[0] }}" value = "{{ i[9] }}"/>
+
+                                <span class = "suppliermodify-recordmonth-label">month : </span>
+                                <input type = "text" class = "suppliermodify-recordmonth-textbox" name = "suppliermodifyrecordmonth{{ i[0] }}" value = "{{ i[10] }}"/>
+                                
+                                <span class = "suppliermodify-recordday-label">day : </span>
+                                <input type = "text" class = "suppliermodify-recordday-textbox" name = "suppliermodifyrecordday{{ i[0] }}" value = "{{ i[11] }}"/>
+                            </div> -->
+                            <button type = "submit" name = "suppliermodifyconfirm" value = "delete{{ i[0] }}" class = "supplier-delete-button">
+                                <i class = "fas fa-trash-alt"></i>
+                            </button>
+                            <button type = "submit" name = "suppliermodifyconfirm" value = "{{ i[0] }}" class = "supplier-modifyconfirm-button">
+                                <i class = "fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                        <div class = "result-image">
+                            <img src = "/static/supplier-images/{{ i[0] }}.jpg" class = "supplier-image" alt = "supplier image"/>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </form>
+        <div class = "supplieradd-container">
+            <form method = "POST" action = "{{ url_for('Suppliers_mod', login_token = login_token) }}" enctype = "multipart/form-data">
+                <div class = "supplieradd">
+                    <p class = "supplieradd-image-label">supplier image</p>
+                    <input type = "file" class = "supplieradd-image" name = "supplieraddimage" accept = "image/*"/>
+                    <p class = "supplieradd-id-label">supplier id</p>
+                    <input type = "text" class = "supplieradd-id-textbox" name = "supplieraddid" value = "{{ new_id }}"/>
+                    <p class = "supplieradd-name-label">name</p>
+                    <input type = "text" class = "supplieradd-name-textbox" name = "supplieraddname"/>
+                    <div>
+                        <p class = "supplieradd-contact-label">contact</p>
+                        <input type = "text" class = "supplieradd-contact-textbox" name = "supplieraddcontact"/>
+                    </div>
+                    <button type = "submit" name = "suppliermodifyconfirm" value = "supplieraddconfirm" class = "supplier-add-button">
+                        <i class = "fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+	</body>
+    <script type = "text/javascript">
+        //Copy supplier id to clipboard
+        function CopyFunction(){
+            var inventory_search_ids = "{{ inventory_search_ids }}";
+            for (let i = 0; i < inventory_search_ids.length; i++){
+                var element_name = "suppliermodify-id-" + inventory_search_ids[i];
+                var copy_text = document.getElementById(element_name);
+                if (copy_text == undefined){
+                    continue;
+                }else{
+                    break;
+                }
+            }
+            var text_area = document.createElement("textarea");
+            text_area.value = copy_text.text;
+            document.body.appendChild(text_area);
+            text_area.select();
+            document.execCommand("Copy");
+            text_area.remove();
+            alert("supplier id copied");
+        }
+
+        //Keep results div hidden until query
+        var results = "{{ suppliers_search_results }}";
+        if (results == "[]"){
+            document.getElementsByClassName("searchresults-container")[0].style.visibility = "hidden";
+        }
+
+        //Operation success indicator
+        var error = "{{ error }}";
+        if (error == "none"){
+            //pass
+        }else{
+            window.alert(error);
+        }
+    </script>
+</html>

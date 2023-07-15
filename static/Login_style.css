@@ -1,0 +1,146 @@
+body{
+	background: rgb(238,238,238);
+	background: linear-gradient(90deg, rgba(238,238,238,1) 50%, rgba(17,197,53,1) 50%);
+	color: #EEEEEE;
+	margin: 0;
+}
+
+.main-container{
+	background-color: transparent;
+	height: 92vh;
+	width: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.userentry-companylogo-container{
+	background-color: transparent;
+	height: 20em;
+	width: 50em;
+	display: grid;
+	grid-template-columns: 47% 6% 47%;
+}
+
+.userentry-companylogo-line{
+	background-color: #EEEEEE;
+	width: 0.1em;
+	border: none;
+}
+
+.userentry-container{
+	background-color: transparent;
+	padding: 1.5em;
+	margin-top: 2em;
+}
+
+.logo-container{
+	margin-top: 3.5em;
+	margin-left: -5em;
+}
+
+#logo{
+	margin-top: 0.7em;
+	margin-left: 1.2em;
+	font-size: 5em;
+}
+
+.logo-name{
+	color: #11c535;
+	font-size: 3.5em;
+	font-family: "Comfortaa";
+}
+
+#icon{
+	font-size: 1.3em;
+}
+.username-entry-label{
+	color: #2D2D2D;
+	margin-top: 1.5em;
+	font-family: "Verdana", monospace;
+	font-size: 1em;
+	letter-spacing: 0.25em;
+}
+
+.username-entry-textbox{
+	background-color: transparent;
+	color: #2D2D2D;
+	width: 15em;
+	font-family: "Roboto", monospace;
+	font-size: 1.3em;
+	letter-spacing: 0.1em;
+	border: none;
+	border-bottom: 0.1em solid #2D2D2D;
+}
+
+.username-entry-textbox:focus{
+	background-color: transparent;
+	border: none;
+	outline: none;
+	border-bottom: 0.1em solid #2D2D2D;	
+}
+
+.login-button{
+	background-color: transparent;
+	color: #2D2D2D;
+	width: 4em;
+	margin-top: 1.5em;
+	font-size: 1.5em;
+	text-align: center;
+	border: 0.15em solid #2D2D2D;
+	border-radius: 0.4em;
+}
+
+.login-button:hover{
+	background-color: #2D2D2D;
+	color: #EEEEEE;
+}
+
+.resetpasswordusername-button-container{
+	margin-top: 1.8em;
+}
+
+.resetpasswordusername-button{
+	color: #2D2D2D;
+	font-size: 1.1em;
+	font-family: "Verdana", monospace;
+	outline: none;
+	text-decoration: none;
+}
+
+.resetpasswordusername-button:hover{
+	text-decoration: underline;
+}
+
+.contact-buttons-container{
+	widtth: 20em;
+	margin-top: 3em;
+	display: flex;
+	justify-content: space-between;
+}
+
+.facebook-button, .instagram-button, .gmail-button{
+	height: 1.6em;
+	width: 1.6em;
+	padding: 0.4em;
+	font-size: 1.8em;
+	text-align: center;
+	outline: none;
+	text-decoration: none;
+}
+
+.facebook-button{
+	color: #3B5998;
+}
+
+.instagram-button{
+	color: #EEEEEE;
+	border-radius: 0.4em;
+	background: -webkit-linear-gradient(45deg, #F09433 0%, #E6683C 25%, #DC2743 50%, #CC2366 75%, #BC1888 100%);
+  	-webkit-background-clip: text;
+  	-webkit-text-fill-color: transparent;
+}
+
+.gmail-button{
+	color: #D44638;
+}
