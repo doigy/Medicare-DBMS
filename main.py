@@ -155,7 +155,8 @@ def Home(login_token):
 	total_items_sold = sum(list(map(sum, number_of_items_sold)))
 	#Calculating total number of items in inventory
 	cursor.execute('SELECT Quantity FROM Inventory')
-	number_of_items_bought = cursor.fetchall()	
+	number_of_items_bought = cursor.fetchall()
+	print(number_of_items_bought)
 	total_items_bought = sum(list(map(sum, number_of_items_bought)))
 	try:
 		sell_through = round((total_items_sold / total_items_bought) * 100, 2)
@@ -288,28 +289,16 @@ def Home_post(login_token):
 		canvas.drawString(130, 800, f'Medicare | {now.strftime("%Y/%m/%d")} Summary')
 		canvas.setFillColor(HexColor('#1A1A1A'))
 		canvas.setFont('Helvetica', 15)
-		# canvas.drawString(30, 730, f'Opening stock')
-		# canvas.drawString(440, 730, f'{opening_stock}Rs')
-		# canvas.drawString(30, 700, f'Purchases')
-		# canvas.drawString(440, 700, f'{purchases}Rs')
 		canvas.drawString(30, 700, f'Number of items bought')
 		canvas.drawString(440, 700, f'{dashboard_data[3]}')
 		canvas.drawString(30, 670, f'Sales')
 		canvas.drawString(440, 670, f'{dashboard_data[5]}Rs')
 		canvas.drawString(30, 640, f'Number of items sold')
 		canvas.drawString(440, 640, f'{dashboard_data[4]}')
-		# canvas.drawString(30, 580, f'Cost of sales')
-		# canvas.drawString(440, 580, f'{cost_of_sales_current}Rs')
-		# canvas.drawString(30, 550, f'Gross profit')
-		# canvas.drawString(440, 550, f'{gross_profit_current}Rs')
 		canvas.drawString(30, 610, f'Sell through percentage')
 		canvas.drawString(440, 610, f'{dashboard_data[0]}%')
-		# canvas.drawString(30, 580, f'Closing Stock')
-		# canvas.drawString(440, 580, f'{closing_stock}Rs')
 		canvas.drawString(30, 580, f'Number of refunds given')
 		canvas.drawString(440, 580, f'{len(dashboard_data[6])}')
-		# canvas.drawString(30, 430, f'Number of discounts given')
-		# canvas.drawString(440, 430, f'{number_of_discounts_current}')
 		canvas.drawString(30, 550, f'Average transaction value')
 		canvas.drawString(440, 550, f'{dashboard_data[1]}Rs')
 		canvas.drawString(30, 520, f'Average transaction quantity')
@@ -318,14 +307,6 @@ def Home_post(login_token):
 		canvas.drawString(30, 460, f'{most_selling_item_id} | {most_selling_item_name}')
 		canvas.drawString(30, 430, f'Least selling item {now.strftime("%Y/%m/%d")}')
 		canvas.drawString(30, 400, f'{least_selling_item_id} | {least_selling_item_name}')
-		# canvas.drawString(10, 230, f'Most selling item {previous_month_name}')
-		# canvas.drawString(10, 210, f'{most_selling_itemid_previous}|{most_selling_itemname_previous}|{most_selling_itemsize_previous}|{most_selling_itemcolor_previous}|{most_selling_itemflavour_previous}')
-		# canvas.drawString(10, 180, f'Least selling item {previous_month_name}')
-		# canvas.drawString(10, 160, f'{least_selling_itemid_previous}|{least_selling_itemname_previous}|{least_selling_itemsize_previous}|{least_selling_itemcolor_previous}|{least_selling_itemflavour_previous}')
-		# canvas.drawString(10, 130, f'Number of refunds given have {number_of_refunds_performance} {number_of_refunds_percentage}% from the past month')
-		# canvas.drawString(10, 100, f'Number of discounts given have {number_of_discounts_performance} {number_of_discounts_percentage}% from the past month')
-		# canvas.drawString(10, 70, f'Average transaction value has {average_transaction_value_performance} {average_transaction_value_percentage}% from the past month')
-		# canvas.drawString(10, 40, f'Sales have {sales_performance} {sales_percentage}% from the past month')
 		canvas.save()
 
 		os.startfile(f'{compiled_app_path}\\financial-summaries\\{now.strftime("%Y-%m-%d_%H-%M-%S")}.pdf')
@@ -353,7 +334,7 @@ def Record_sale(login_token):
 	1 - loaded
 	2 - paused
 	3 - checkedout
-	4 - refeunded
+	4 - refunded
 	'''
 
 	cart_id = session.get('cart_id')
@@ -1039,9 +1020,6 @@ def Checkout(login_token):
 	elif button_pressed == 'checkout':
 		itemids_receipt_display = []
 		itemnames_receipt_display = []
-		itemsizes_receipt_display = []
-		itemcolors_receipt_display = []
-		itemflavours_receipt_display = []
 		itemquantities_receipt_display = []
 		itemtotalsaleprices_receipt_display = []
 
@@ -1051,6 +1029,15 @@ def Checkout(login_token):
 		for receipt_itemid_tuple in receipt_itemids_display:
 			for receipt_itemid_value in receipt_itemid_tuple:
 				itemids_receipt_display.append(receipt_itemid_value)
+
+		receipt_itemnames_display = None
+		#Carts database query get item names
+		for itemid in itemids_receipt_display:
+			cursor.execute(''' SELECT ProductName FROM Inventory WHERE ProductID = %s ''', (itemid,))
+			receipt_itemnames_display = cursor.fetchall()
+			for receipt_itemname_tuple in receipt_itemnames_display:
+				for receipt_itemname_value in receipt_itemname_tuple:
+					itemnames_receipt_display.append(receipt_itemname_value)
 
 		#Carts database query get item quantities
 		cursor.execute(''' SELECT Quantity FROM Cart WHERE CartID = %s ''', (cart_id,))
@@ -1151,17 +1138,18 @@ def Checkout(login_token):
 		canvas.drawString(5, height - 35, f'Address: {shop_address}')
 		canvas.drawString(5, height - 45, f'Contact: {shop_contact}')
 		canvas.drawString(0, height - 55, '-----------------------------------------------------------------------------------------------------------------------------------------')
-		canvas.drawString(5, height - 60, 'item id | name')
+		canvas.drawString(10, height - 60, 'item id | name')
 		canvas.setFont('Helvetica', 5)
-		canvas.drawString(140, height - 60, 'quantity')
-		canvas.drawString(190, height - 60, 'price')
+		canvas.drawString(111, height - 60, 'quantity')
+		canvas.drawString(189, height - 60, 'price')
 		canvas.drawString(0, height - 65, '-----------------------------------------------------------------------------------------------------------------------------------------')
 		
 		for i in range(0, len(itemids_receipt_display)):
-			canvas.drawString(5, height - (height_num - 10), f'{itemids_receipt_display[i]}')
+			canvas.drawString(10, height - (height_num - 10), f'{itemids_receipt_display[i]}')
+			canvas.drawString(10, height - (height_num - 5), f'{itemnames_receipt_display[i]}')
 			canvas.setFont('Helvetica', 5)
-			canvas.drawString(150, height - (height_num - 10), f'{itemquantities_receipt_display[i]}')
-			canvas.drawString(180, height - (height_num - 10), f'{itemtotalsaleprices_receipt_display[i]}Rs')
+			canvas.drawString(120, height - (height_num - 10), f'{itemquantities_receipt_display[i]}')
+			canvas.drawString(187, height - (height_num - 10), f'{itemtotalsaleprices_receipt_display[i]}Rs')
 			height_num += 20
 
 		canvas.setFont('Helvetica', 6)
@@ -2009,9 +1997,6 @@ def Inventory_mod(login_token):
 		else:
 			pass
 
-		# #Calculate total cost price
-		# item_add_totalcostprice = float(item_add_unitcostprice) * int(item_add_stock)
-
 		#Exception handling for item image save
 		try:	
 			#Adding image to static directory
@@ -2025,9 +2010,6 @@ def Inventory_mod(login_token):
 
 		#Exception handling for item add
 		try:
-			#Inventory database query add new item
-			print(item_add_id)
-
 			cursor.execute(''' INSERT INTO Inventory(ProductID, ProductName, Quantity, UnitSalePrice, ExpiryDate, SupplierID) VALUES(%s, %s, %s, %s, %s, %s) ''', (item_add_id, item_add_name, item_add_stock, item_add_unitsaleprice, item_add_expiry, item_add_supplier))
 			mysql.connection.commit()
 
@@ -2035,9 +2017,7 @@ def Inventory_mod(login_token):
 			mysql.connection.commit()
 
 			barcode_format = barcode.get_barcode_class('ean8')
-
 			item_add_barcode = barcode_format(str(item_add_id), writer = ImageWriter())
-  
 			item_add_barcode.save(f'static/item-barcodes/{item_add_id}')
 
 			error = 'modification successful'
@@ -2426,18 +2406,18 @@ def Settings_post(login_token):
 		canvas.drawString(5, height - 35, f'Address: {shop_address}')
 		canvas.drawString(5, height - 45, f'Contact: {shop_contact}')
 		canvas.drawString(0, height - 55, '-----------------------------------------------------------------------------------------------------------------------------------------')
-		canvas.drawString(5, height - 60, 'item id | name')
+		canvas.drawString(10, height - 60, 'item id | name')
 		canvas.setFont('Helvetica', 5)
-		canvas.drawString(140, height - 60, 'quantity')
-		canvas.drawString(190, height - 60, 'price')
+		canvas.drawString(111, height - 60, 'quantity')
+		canvas.drawString(189, height - 60, 'price')
 		canvas.drawString(0, height - 65, '-----------------------------------------------------------------------------------------------------------------------------------------')
 
 		for i in range(0, len(itemids_receipt_display)):
-			canvas.drawString(5, height - (height_num - 10), f'{itemids_receipt_display[i]}')
+			canvas.drawString(10, height - (height_num - 10), f'{itemids_receipt_display[i]}')
 			canvas.setFont('Helvetica', 5)
-			canvas.drawString(5, height - (height_num - 5), f'{itemnames_receipt_display[i]}')
-			canvas.drawString(150, height - (height_num - 10), f'{itemquantities_receipt_display[i]}')
-			canvas.drawString(180, height - (height_num - 10), f'{itemtotalsaleprices_receipt_display[i]}Rs')
+			canvas.drawString(10, height - (height_num - 5), f'{itemnames_receipt_display[i]}')
+			canvas.drawString(120, height - (height_num - 10), f'{itemquantities_receipt_display[i]}')
+			canvas.drawString(185, height - (height_num - 10), f'{itemtotalsaleprices_receipt_display[i]}Rs')
 			height_num += 20
 
 		canvas.setFont('Helvetica', 6)
