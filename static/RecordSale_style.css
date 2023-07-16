@@ -239,6 +239,7 @@ body{
 	margin-top: 2em;
 	border: 0.2em solid #FF5733;
 	border-radius: 0.4em;
+	visibility: visible;
 }
 
 .total-button:hover{
@@ -255,6 +256,7 @@ body{
 	margin-top: 0.8em;
 	border: 0.2em solid #02A0D3;
 	border-radius: 0.4em;
+	visibility: visible;
 }
 
 .checkout-button:hover{
@@ -271,6 +273,7 @@ body{
 	margin-top: 0.8em;
 	border: 0.2em solid #F1C40F;
 	border-radius: 0.4em;
+	visibility: visible;
 }
 
 .reset-button:hover{
@@ -287,6 +290,7 @@ body{
 	margin-top: 2em;
 	border: 0.2em solid #34495E;
 	border-radius: 0.4em;
+	visibility: visible;
 }
 
 .holdcart-button:hover{

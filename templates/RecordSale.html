@@ -147,10 +147,10 @@
 				<div class = "restcarts-info">
 					{% for i in rest_carts %}
 						<span class = "restcarts-info-receiptcode">{{ i[0] }}-{{ i[1] }}</span>
-						<button type = "submit" name = "cartmodify" value = "refund{{ i[0] }}" class = "refund-button" title = "refund">
+						<button type = "submit" name = "cartmodify" value = "refund{{ i[0] }}" class = "refund-button" id = "refund-button{{ i[0] }}" title = "refund">
 							refund
 						</button>
-						<button type = "submit" name = "cartmodify" value = "loadcart{{ i[0] }}" class = "cart-load-button" title = "load cart">
+						<button type = "submit" name = "cartmodify" value = "loadcart{{ i[0] }}{{ i[1] }}" class = "cart-load-button" title = "load cart">
 							<i class = "fas fa-arrow-right"></i>
 						</button>
 						<br/><br/>
@@ -180,6 +180,31 @@
 		</form>
 	</body>
 	<script type = "text/javascript">
+		document.getElementsByClassName('holdcart-button')[0].style.visibility = 'visible';
+		document.getElementsByClassName('checkout-button')[0].style.visibility = 'visible';
+		document.getElementsByClassName('reset-button')[0].style.visibility = 'visible';
+
+		var carts = "{{ rest_carts }}";
+		var carts_new = carts.replace("((", "");
+		var carts_new2 = carts_new.replace("),)", "");
+		var carts_new3 = carts_new2.split(", ")
+		console.log(carts_new3);
+
+		for (let i = 0; i < carts_new3.length; i++) {
+			console.log(carts_new3[i]);
+			if (carts_new3[i][0] == '4') {
+				document.getElementById('refund-button' + carts_new3[i]).style.display = 'none';
+			}
+		}
+
+		var cart_id = "{{ cart_id }}";
+
+		if (cart_id[0] == '4' || cart_id[0] == '3') {
+			document.getElementsByClassName('holdcart-button')[0].style.visibility = 'hidden';
+			document.getElementsByClassName('checkout-button')[0].style.visibility = 'hidden';
+			document.getElementsByClassName('reset-button')[0].style.visibility = 'hidden';
+		}
+
 		var error = "{{ error }}";
 		if (error == "none"){
 			//pass

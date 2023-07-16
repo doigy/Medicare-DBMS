@@ -12,6 +12,9 @@ from reportlab.lib.colors import HexColor
 from datetime import datetime
 import uuid, pygal, secrets, string, os, barcode, pathlib, socket, webbrowser
 
+'''
+Final testing
+'''
 
 app = Flask(__name__)
 app.secret_key = str(uuid.uuid4().hex[:20])
@@ -26,6 +29,7 @@ mysql = MySQL(app)
 
 
 cart_id = '1' + ''.join(secrets.choice(string.digits) for i in range(7))
+customer_id = ''.join(secrets.choice(string.digits) for i in range(8))
 
 
 custom_style = Style(
@@ -150,11 +154,11 @@ def Home(login_token):
 	cursor = mysql.connection.cursor()
 
 	#Calculating total number of items sold
-	cursor.execute('SELECT Quantity FROM Cart')
+	cursor.execute(''' SELECT Quantity FROM Cart ''')
 	number_of_items_sold = cursor.fetchall()	
 	total_items_sold = sum(list(map(sum, number_of_items_sold)))
 	#Calculating total number of items in inventory
-	cursor.execute('SELECT Quantity FROM Inventory')
+	cursor.execute(''' SELECT Quantity FROM Inventory ''')
 	number_of_items_bought = cursor.fetchall()
 	print(number_of_items_bought)
 	total_items_bought = sum(list(map(sum, number_of_items_bought)))
@@ -166,7 +170,7 @@ def Home(login_token):
 	dashboard_data.append(sell_through)
 
 	#Get total sale prices for cart
-	cursor.execute('SELECT TotalSalePrice FROM Cart')
+	cursor.execute(''' SELECT TotalSalePrice FROM Cart ''')
 	sales = cursor.fetchall()	
 	for sales_tuple in sales:
 		for sales_value in sales_tuple:
@@ -178,7 +182,7 @@ def Home(login_token):
 	dashboard_data.append(average_transaction)
 
 	#Get total sale prices for cart
-	cursor.execute('SELECT Quantity FROM Cart')
+	cursor.execute(''' SELECT Quantity FROM Cart ''')
 	sales_quantities = cursor.fetchall()	
 	for sales_qty_tuple in sales_quantities:
 		for sales_quantities_value in sales_qty_tuple:
@@ -258,6 +262,7 @@ def Home(login_token):
 	print(closing_time)
 
 	session['cart_id'] = cart_id
+	session['customer_id'] = customer_id
 	session['dashboard_data'] = dashboard_data
 	session['most_selling_item_id'] = most_selling_item_id
 	session['least_selling_item_id'] = least_selling_item_id
@@ -338,7 +343,7 @@ def Record_sale(login_token):
 	'''
 
 	cart_id = session.get('cart_id')
-	customer_id = ''
+	customer_id = session.get('customer_id')
 
 	#Get sales tax value
 	sales_tax_file = open('bin/SalesTax.bin', 'rb')
@@ -372,6 +377,7 @@ def Record_sale(login_token):
 
 	session['login_token'] = login_token
 	session['cart_id'] = cart_id
+	session['customer_id'] = customer_id
 
 	return render_template('RecordSale.html', login_token = login_token, customer_id = customer_id, cart_id = cart_id, sales_tax = sales_tax, cart_loaded = cart_loaded, rest_carts = rest_carts, error = error)
 
@@ -410,6 +416,14 @@ def Record_sale_post(login_token):
 			item_id = int(request.form['itemid'])
 			item_quantity = int(request.form['itemquantity'])
 			customer_id = int(request.form['customerid'])
+
+			cursor.execute('''SELECT CustomerID, COUNT(*) FROM Cart WHERE CustomerID = %s GROUP BY CustomerID ''', (customer_id,))
+			row_count = cursor.rowcount
+
+			if row_count == 0:
+				#Suppliers database query add new item
+				cursor.execute(''' INSERT INTO Customers VALUES(%s, %s, %s, %s) ''', (customer_id, '', '', ''))
+				mysql.connection.commit()
 		
 		except Exception:
 			#Carts database query get carts data
@@ -434,6 +448,9 @@ def Record_sale_post(login_token):
 			cursor.close()
 
 			error = 'missing or invalid input/s'
+
+			session['cart_id'] = cart_id
+			session['customer_id'] = customer_id
 
 			return render_template('RecordSale.html', login_token = login_token, cart_id = cart_id, customer_id = customer_id, sales_tax = sales_tax, rest_carts = rest_carts, cart_loaded = cart_loaded, error = error)
 
@@ -506,15 +523,6 @@ def Record_sale_post(login_token):
 					item_unitsaleprice_value = sum(list(map(sum, item_unitsaleprice)))
 					#Calculating item total sale price
 					item_totalsaleprice_value = item_unitsaleprice_value * item_quantity
-
-					# #Inventory database query get item name
-					# cursor.execute(''' SELECT ProductName FROM inventory WHERE ProductID = %s ''', (item_id,))
-					# item_name = cursor.fetchall()
-					# for item_name_tuple in item_name:
-					# 	for item_name_value in item_name_tuple:
-					# 		item_name = item_name_value
-
-					print(cart_id)
 
 					#Carts database query add new item
 					cursor.execute(''' INSERT INTO Cart VALUES(%s, %s, %s, %s, %s) ''', (cart_id, customer_id, item_id, item_quantity, item_totalsaleprice_value))
@@ -635,7 +643,7 @@ def Record_sale_post(login_token):
 				FROM Cart
 				WHERE LEFT(CartID, 1) = 1); ''')
 		cart_loaded = cursor.fetchall()
-		#Carts database query get cartss on hold data
+		#Carts database query get carts on hold data
 		cursor.execute(''' SELECT DISTINCT CartID, CustomerID FROM Cart ''')
 		rest_carts = cursor.fetchall()
 
@@ -650,40 +658,50 @@ def Record_sale_post(login_token):
 	elif 'loadcart' in button_pressed:
 		cart_id = session.get("cart_id")
 		customer_id = session.get("customer_id")
-		carts_cart_id = button_pressed[8:]
+		carts_cart_id = button_pressed[8:16]
+		carts_customer_id = button_pressed[16:]
 
-		cursor.execute(''' SET FOREIGN_KEY_CHECKS = 0 ''')
+		if carts_cart_id[0] == '2':
+			cursor.execute(''' SET FOREIGN_KEY_CHECKS = 0 ''')
 
-		update_cart_id = '1' + cart_id[1:]
+			update_cart_id = '1' + carts_cart_id[1:]
 
-		cursor.execute("UPDATE CartInventory SET CartID = %s WHERE CartID = %s", (update_cart_id, carts_cart_id))
-		mysql.connection.commit()
+			cursor.execute("UPDATE CartInventory SET CartID = %s WHERE CartID = %s", (update_cart_id, carts_cart_id))
+			mysql.connection.commit()
 
-		#Carts database query update item values
-		cursor.execute("UPDATE Cart SET CartID = %s WHERE CartID = %s", (update_cart_id, carts_cart_id))
-		mysql.connection.commit()
+			#Carts database query update item values
+			cursor.execute("UPDATE Cart SET CartID = %s WHERE CartID = %s", (update_cart_id, carts_cart_id))
+			mysql.connection.commit()
 
-		cursor.execute(''' SET FOREIGN_KEY_CHECKS = 1 ''')
+			cursor.execute(''' SET FOREIGN_KEY_CHECKS = 1 ''')
 
-		#Carts database query get carts data
-		cursor.execute(''' SELECT ProductID, Quantity, TotalSalePrice
-			FROM Cart
-			WHERE CartID IN (
-				SELECT CartID
+			#Carts database query get carts data
+			cursor.execute(''' SELECT ProductID, Quantity, TotalSalePrice
 				FROM Cart
-				WHERE LEFT(CartID, 1) = 1); ''')
-		cart_loaded = cursor.fetchall()
-		#Carts database query get cartss on hold data
-		cursor.execute(''' SELECT DISTINCT CartID, CustomerID FROM Cart ''')
-		rest_carts = cursor.fetchall()
+				WHERE CartID IN (
+					SELECT CartID
+					FROM Cart
+					WHERE LEFT(CartID, 1) = 1); ''')
+			cart_loaded = cursor.fetchall()
+			#Carts database query get carts on hold data
+			cursor.execute(''' SELECT DISTINCT CartID, CustomerID FROM Cart ''')
+			rest_carts = cursor.fetchall()
+
+		else:
+			#Carts database query get carts data
+			cursor.execute(''' SELECT ProductID, Quantity, TotalSalePrice FROM Cart WHERE CartID = %s ''', (carts_cart_id,))
+			cart_loaded = cursor.fetchall()
+			#Carts database query get carts on hold data
+			cursor.execute(''' SELECT DISTINCT CartID, CustomerID FROM Cart ''')
+			rest_carts = cursor.fetchall()
 
 		#Carts database connection closing
 		cursor.close()
 
-		session['cart_id'] = carts_cart_id
+		session['cart_id'] = cart_id
 		session['customer_id'] = customer_id
 
-		return render_template('RecordSale.html', login_token = login_token, customer_id = customer_id, cart_id = carts_cart_id, sales_tax = sales_tax, cart_loaded = cart_loaded, rest_carts = rest_carts, error = error)
+		return render_template('RecordSale.html', login_token = login_token, customer_id = carts_customer_id, cart_id = carts_cart_id, sales_tax = sales_tax, cart_loaded = cart_loaded, rest_carts = rest_carts, error = error)
 	
 	elif button_pressed == 'cartssearch':
 		#User query
@@ -705,106 +723,62 @@ def Record_sale_post(login_token):
 		cursor.execute(''' SELECT DISTINCT CartID, CustomerID FROM Cart WHERE CartID LIKE %s ''', (query,))
 		search_carts = cursor.fetchall()
 
+		print(search_carts)
+
 		#Carts database connection closing
 		cursor.close()
 
 		session['cart_id'] = cart_id
 		session['customer_id'] = customer_id
 
-		return render_template('RecordSale.html', login_token = login_token, customer_id = customer_id, cart_id = cart_id, sales_tax = sales_tax, cart_loaded = cart_loaded, search_carts = search_carts, error = error)
+		return render_template('RecordSale.html', login_token = login_token, customer_id = customer_id, cart_id = cart_id, sales_tax = sales_tax, cart_loaded = cart_loaded, rest_carts = search_carts, error = error)
 
 	elif 'refund' in button_pressed:
 		refund_cart_id = button_pressed[6:]
 		refund_cart_quantities = []
 		refund_cart_itemids = []
 
-		#Get validity days for refund
-		refund_valid_limit_file = open('bin/RefundValidLimit.bin', 'rb')
-		refund_valid_limit = int(refund_valid_limit_file.read().decode())
-		refund_valid_limit_file.close()
-
-		#Sellingrecord database connection
-		sellingrecord_db_connection = sqlite3.connect('databases/sellingrecord.db')
-		sellingrecord_db_cursor = sellingrecord_db_connection.cursor()
-
-		#Sellingrecord database query get record year
-		sellingrecord_db_cursor.execute('SELECT recordyear FROM sellingrecord WHERE receiptcode = %s', (refund_cart_id,))
-		refund_cart_recordyear = sellingrecord_db_cursor.fetchall()
-		#Cart recordyear value tuple to float
-		refund_cart_recordyear = sum(list(map(sum, refund_cart_recordyear)))
-
-		#Sellingrecord database query get record month
-		sellingrecord_db_cursor.execute('SELECT recordmonth FROM sellingrecord WHERE receiptcode = %s', (refund_cart_id,))
-		refund_cart_recordmonth = sellingrecord_db_cursor.fetchall()
-		#Cart recordmonth value tuple to float
-		refund_cart_recordmonth = sum(list(map(sum, refund_cart_recordmonth)))
-
-		#Sellingrecord database query get record day
-		sellingrecord_db_cursor.execute('SELECT recordday FROM sellingrecord WHERE receiptcode = %s', (refund_cart_id,))
-		refund_cart_recordday = sellingrecord_db_cursor.fetchall()
-		#Cart recordday value tuple to float
-		refund_cart_recordday = sum(list(map(sum, refund_cart_recordday)))
-
 		#Carts database query get cart item ids
-		carts_db_cursor.execute("SELECT DISTINCT condition FROM Carts WHERE receiptcode = %s", (refund_cart_id,))
-		refund_cart_condition = carts_db_cursor.fetchall()
-		for refund_cart_condition_tuple in refund_cart_condition:
-			for refund_cart_condition_value in refund_cart_condition_tuple:
-				refund_cart_condition = refund_cart_condition_value		
+		cursor.execute(''' SELECT ProductID FROM Cart WHERE CartID = %s ''', (refund_cart_id,))
+		refund_cart_itemids_data = cursor.fetchall()
+		for refund_cart_itemid_tuple in refund_cart_itemids_data:
+			for refund_cart_itemid_value in refund_cart_itemid_tuple:
+				refund_cart_itemids.append(refund_cart_itemid_value)
 
-		if current_day - refund_cart_recordday <= refund_valid_limit and refund_cart_condition == 'sold':
-			#Refundrecord database connection
-			refundrecord_db_connection = sqlite3.connect('databases/refundrecord.db')
-			refundrecord_db_cursor = refundrecord_db_connection.cursor()
+		#Carts database query get cart item quantites
+		cursor.execute(''' SELECT Quantity FROM Cart WHERE CartID = %s''', (refund_cart_id,))
+		refund_cart_quantities_data = cursor.fetchall()
+		for refund_cart_quantity_tuple in refund_cart_quantities_data:
+			for refund_cart_quantity_value in refund_cart_quantity_tuple:
+				refund_cart_quantities.append(refund_cart_quantity_value)
 
-			#Carts database query update values
-			carts_db_cursor.execute("UPDATE Cart SET condition = 'refund' WHERE receiptcode = %s", (refund_cart_id,))
-			carts_db_connection.commit()
+		#Update inventory stock values
+		for i in range(0, len(refund_cart_itemids)):
+			#Inventory database query update values
+			cursor.execute("UPDATE Inventory SET Quantity = Quantity + %s WHERE ProductID = %s", (refund_cart_quantities[i], refund_cart_itemids[i]))
+			mysql.connection.commit()
 
-			#Carts database query get cart item ids
-			carts_db_cursor.execute("SELECT itemid FROM Cart WHERE receiptcode = %s AND condition = 'sold'", (refund_cart_id,))
-			refund_cart_itemids_data = carts_db_cursor.fetchall()
-			for refund_cart_itemid_tuple in refund_cart_itemids_data:
-				for refund_cart_itemid_value in refund_cart_itemid_tuple:
-					refund_cart_itemids.append(refund_cart_itemid_value)
+		#Cart database query get total
+		cursor.execute('SELECT TotalSalePrice FROM Cart WHERE CartID = %s', (refund_cart_id,))
+		refund_cart_total = cursor.fetchall()
+		#Cart total value tuple to float
+		refund_cart_total = sum(list(map(sum, refund_cart_total)))
 
-			#Carts database query get cart item quantites
-			carts_db_cursor.execute("SELECT quantity FROM Cart WHERE receiptcode = %s AND condition = 'sold'", (refund_cart_id,))
-			refund_cart_quantities_data = carts_db_cursor.fetchall()
-			for refund_cart_quantity_tuple in refund_cart_quantities_data:
-				for refund_cart_quantity_value in refund_cart_quantity_tuple:
-					refund_cart_quantities.append(refund_cart_quantity_value)
+		error = f'return {refund_cart_total}Rs to the customer'
 
-			#Update inventory stock values
-			for i in range(0, len(refund_cart_itemids)):
-				#Inventory database query update values
-				inventory_db_cursor.execute("UPDATE Inventory SET currentstock = currentstock + %s WHERE id = %s", (refund_cart_quantities[i], refund_cart_itemids[i]))
-				inventory_db_connection.commit()
+		cursor.execute(''' SET FOREIGN_KEY_CHECKS = 0 ''')
 
-			#Sellingrecord database query get total
-			sellingrecord_db_cursor.execute('SELECT total FROM sellingrecord WHERE receiptcode = %s', (refund_cart_id,))
-			refund_cart_total = sellingrecord_db_cursor.fetchall()
-			#Cart total value tuple to float
-			refund_cart_total = sum(list(map(sum, refund_cart_total)))
+		update_cart_id = int('4' + refund_cart_id[1:])
+		refund_cart_id = int(refund_cart_id)
 
-			#Sellingrecord database query get numberofitems
-			sellingrecord_db_cursor.execute('SELECT numberofitems FROM sellingrecord WHERE receiptcode = %s', (refund_cart_id,))
-			refund_cart_numberofitems = sellingrecord_db_cursor.fetchall()
-			#Cart numberofitems value tuple to float
-			refund_cart_numberofitems = sum(list(map(sum, refund_cart_numberofitems)))
+		cursor.execute("UPDATE CartInventory SET CartID = %s WHERE CartID = %s", (update_cart_id, refund_cart_id))
+		mysql.connection.commit()
 
-			#Refundrecord database query add new refund
-			refundrecord_db_cursor.execute('INSERT INTO refundrecord VALUES(%s, %s, %s, %s, %s, %s)', (refund_cart_id, refund_cart_numberofitems, refund_cart_total, current_year, current_month, current_day))
-			refundrecord_db_connection.commit()
+		#Carts database query update item values
+		cursor.execute("UPDATE Cart SET CartID = %s WHERE CartID = %s", (update_cart_id, refund_cart_id))
+		mysql.connection.commit()
 
-			error = f'return {refund_cart_total}Rs to the customer'
-
-			#Refundrecord database connection closing
-			refundrecord_db_cursor.close()
-			refundrecord_db_connection.close()
-
-		else:
-			error = 'refund validity has passed or refund already done'
+		cursor.execute(''' SET FOREIGN_KEY_CHECKS = 1 ''')
 
 		#Carts database query get carts data
 		cursor.execute(''' SELECT ProductID, Quantity, TotalSalePrice
@@ -821,10 +795,13 @@ def Record_sale_post(login_token):
 		#Carts database connection closing
 		cursor.close()
 
-		session['cart_id'] = cart_id
-		session['customer_id'] = customer_id
+		new_cart_id = '1' + ''.join(secrets.choice(string.digits) for i in range(7))
+		new_customer_id = ''.join(secrets.choice(string.digits) for i in range(8))
 
-		return render_template('RecordSale.html', login_token = login_token, customer_id = customer_id, cart_id = cart_id, sales_tax = sales_tax, cart_loaded = cart_loaded, rest_carts = rest_carts, error = error)
+		session['cart_id'] = new_cart_id
+		session['customer_id'] = new_customer_id
+
+		return render_template('RecordSale.html', login_token = login_token, customer_id = new_customer_id, cart_id = new_cart_id, sales_tax = sales_tax, cart_loaded = cart_loaded, rest_carts = rest_carts, error = error)
 
 	else:
 		cart_id = session.get("cart_id")
@@ -859,6 +836,7 @@ def Checkout(login_token):
 		return redirect(f'http://{ip_address}:7500/')
 
 	cart_id = session.get('cart_id')
+	customer_id = session.get('customer_id')
 	current_year = int(datetime.now().year)
 	current_month = int(datetime.now().month)
 	current_day = int(datetime.now().day)
@@ -926,8 +904,9 @@ def Checkout(login_token):
 		session['final_total'] = final_total
 		session['sub_total'] = sub_total
 		session['login_token'] = login_token
+		session['customer_id'] = customer_id
 
-		return render_template('RecordSale.html', login_token = login_token, cart_id = cart_id, sales_tax = sales_tax, sub_total = sub_total, final_total = final_total, number_of_items = number_of_items, rest_carts = rest_carts, cart_loaded = cart_loaded, error = error)
+		return render_template('RecordSale.html', login_token = login_token, cart_id = cart_id, customer_id = customer_id, sales_tax = sales_tax, sub_total = sub_total, final_total = final_total, number_of_items = number_of_items, rest_carts = rest_carts, cart_loaded = cart_loaded, error = error)
 
 	elif button_pressed == 'holdcart':
 		#Carts database query get carts data
@@ -945,12 +924,15 @@ def Checkout(login_token):
 
 		if cart_loaded == ():
 			error = 'no cart loaded for holding'
+
 			session['login_token'] = login_token
+			session['cart_id'] = cart_id
+			session['customer_id'] = customer_id
 
 			#Carts database connection closing
 			cursor.close()
 
-			return render_template('RecordSale.html', login_token = login_token, cart_id = cart_id, sales_tax = sales_tax, rest_carts = rest_carts, cart_loaded = cart_loaded, error = error)
+			return render_template('RecordSale.html', login_token = login_token, cart_id = cart_id, customer_id = customer_id, sales_tax = sales_tax, rest_carts = rest_carts, cart_loaded = cart_loaded, error = error)
 		
 		else:
 			cursor.execute(''' SET FOREIGN_KEY_CHECKS = 0 ''')
@@ -1000,22 +982,23 @@ def Checkout(login_token):
 		canvas.setFont('Helvetica', 9)
 		canvas.drawString(5, 40, f'HOLDING TOKEN')
 		canvas.setFont('Helvetica', 7)
-		canvas.drawString(5, 20, f'PLEASE DO NOT LOSE THIS TOKEN')
+		canvas.drawString(5, 20, f'PLEASE DO NOT LOSE THIS TOKEN | {str(customer_id)}')
 		canvas.drawString(5, 10, f'THIS TOKEN AND YOUR CART WILL EXPIRE AT {shop_closingtime}')
 		canvas.save()
 
 		compiled_app_path = pathlib.Path(__file__).parent.resolve()
 
 		new_cart_id = '1' + ''.join(secrets.choice(string.digits) for i in range(7))
-		print("NEW:", new_cart_id)
+		new_customer_id = ''.join(secrets.choice(string.digits) for i in range(8))
 
 		os.startfile(f'{compiled_app_path}\\holding-tokens\\{cart_id}.pdf')
 
 		session['cart_id'] = new_cart_id
 		session['login_token'] = login_token
+		session['customer_id'] = new_customer_id
 		session.modified = True
 
-		return render_template('RecordSale.html', login_token = login_token, cart_id = new_cart_id, sales_tax = sales_tax, rest_carts = rest_carts, cart_loaded = cart_loaded, error = error)
+		return render_template('RecordSale.html', login_token = login_token, cart_id = new_cart_id, customer_id = new_customer_id, sales_tax = sales_tax, rest_carts = rest_carts, cart_loaded = cart_loaded, error = error)
 
 	elif button_pressed == 'checkout':
 		itemids_receipt_display = []
@@ -1076,9 +1059,10 @@ def Checkout(login_token):
 			error = 'missing or invalid input/s'
 
 			session['cart_id'] = cart_id
+			session['customer_id'] = customer_id
 			session['login_token'] = login_token
 	
-			return render_template('RecordSale.html', login_token = login_token, cart_id = cart_id, final_total = final_total, sub_total = sub_total, number_of_items = number_of_items, sales_tax = sales_tax, rest_carts = rest_carts, cart_loaded = cart_loaded, error = error)
+			return render_template('RecordSale.html', login_token = login_token, cart_id = cart_id, customer_id = customer_id, final_total = final_total, sub_total = sub_total, number_of_items = number_of_items, sales_tax = sales_tax, rest_carts = rest_carts, cart_loaded = cart_loaded, error = error)
 
 		if amount_paid < final_total:
 			#Carts database query get carts data
@@ -1099,9 +1083,10 @@ def Checkout(login_token):
 			error = 'amount paid is less than final total'
 
 			session['cart_id'] = cart_id
+			session['customer_id'] = customer_id
 			session['login_token'] = login_token
 
-			return render_template('RecordSale.html', login_token = login_token, cart_id = cart_id, final_total = final_total, sub_total = sub_total, number_of_items = number_of_items, sales_tax = sales_tax, rest_carts = rest_carts, cart_loaded = cart_loaded, error = error)
+			return render_template('RecordSale.html', login_token = login_token, cart_id = cart_id, customer_id = customer_id, final_total = final_total, sub_total = sub_total, number_of_items = number_of_items, sales_tax = sales_tax, rest_carts = rest_carts, cart_loaded = cart_loaded, error = error)
 		else:
 			pass
 
@@ -1171,6 +1156,7 @@ def Checkout(login_token):
 		canvas.drawString(180, 30, f'{round(amount_paid - final_total, 2)}Rs')
 		canvas.drawString(0, 20, '-----------------------------------------------------------------------------------------------------------------------------------------')
 		canvas.drawString(5, 12, 'THANKYOU FOR SHOPPING WITH US')
+		canvas.drawString(5, 5, str(customer_id))
 		canvas.setFont('Helvetica', 5)
 		canvas.drawString(123, 5, f'valid for refund within {refund_valid_limit} days after purchase')
 
@@ -1214,15 +1200,16 @@ def Checkout(login_token):
 		cursor.close()
 
 		new_cart_id = '1' + ''.join(secrets.choice(string.digits) for i in range(7))
-		print(new_cart_id)
+		new_customer_id = ''.join(secrets.choice(string.digits) for i in range(8))
 
 		os.startfile(f'{compiled_app_path}\\receipts\\{cart_id}.pdf')
 
 		session['cart_id'] = new_cart_id	
 		session['login_token'] = login_token
+		session['customer_id'] = new_customer_id
 		session.modified = True
 	
-		return render_template('RecordSale.html', login_token = login_token, cart_id = new_cart_id, sales_tax = sales_tax, rest_carts = rest_carts, cart_loaded = cart_loaded, error = error)
+		return render_template('RecordSale.html', login_token = login_token, cart_id = new_cart_id, customer_id = new_customer_id, sales_tax = sales_tax, rest_carts = rest_carts, cart_loaded = cart_loaded, error = error)
 
 	elif button_pressed == 'resetcart':
 		try:
@@ -1249,11 +1236,14 @@ def Checkout(login_token):
 
 		#Generating new receipt code
 		new_cart_id = '1' + ''.join(secrets.choice(string.digits) for i in range(7))
+		new_customer_id = ''.join(secrets.choice(string.digits) for i in range(8))
+
 		session['cart_id'] = new_cart_id
+		session['customer_id'] = new_customer_id
 		session['login_token'] = login_token
 		session.modified = True
 
-		return render_template('RecordSale.html', login_token = login_token, cart_id = new_cart_id, sales_tax = sales_tax, rest_carts = rest_carts, cart_loaded = cart_loaded, error = error)
+		return render_template('RecordSale.html', login_token = login_token, cart_id = new_cart_id, customer_id = new_customer_id, sales_tax = sales_tax, rest_carts = rest_carts, cart_loaded = cart_loaded, error = error)
 
 	else:
 		pass
@@ -1274,8 +1264,10 @@ def Checkout(login_token):
 	cursor.close()
 
 	session['login_token'] = login_token
+	session['cart_id'] = cart_id
+	session['customer_id'] = customer_id
 
-	return render_template('RecordSale.html', login_token = login_token, cart_id = cart_id, sales_tax = sales_tax, rest_carts = rest_carts, cart_loaded = cart_loaded, error = error)
+	return render_template('RecordSale.html', login_token = login_token, cart_id = cart_id, customer_id = customer_id, sales_tax = sales_tax, rest_carts = rest_carts, cart_loaded = cart_loaded, error = error)
 
 
 @app.route('/customers/<login_token>')
@@ -1406,17 +1398,6 @@ def Customers_mod(login_token):
 		else:
 			pass
 
-		# #Exception handling for supplier image save
-		# try:	
-		# 	#Adding supplier to static directory
-		# 	supplier_add_image.save(os.path.join('static/supplier-images', secure_filename(supplier_add_image.filename)))
-
-		# 	#Renaming file to entered id
-		# 	os.rename(f'static/supplier-images/{secure_filename(supplier_add_image.filename)}', f'static/supplier-images/{str(supplier_add_id)}.jpg')
-
-		# except FileNotFoundError:
-		# 	pass
-
 		#Exception handling for item add
 		try:
 			#Suppliers database query add new item
@@ -1432,13 +1413,6 @@ def Customers_mod(login_token):
 		#User entry
 		customer_modify_delete_id = request.form['customermodifyconfirm']
 		customer_modify_delete_id_new = customer_modify_delete_id[6:]
-
-		# try:
-		# 	#Delete supplier image
-		# 	os.remove(f'static/supplier-images/{supplier_modify_delete_id_new}.jpg')
-			
-		# except Exception:
-		# 	pass
 
 		#Exception handling for supplier delete
 		try:
@@ -2075,7 +2049,7 @@ def Inventory_mod(login_token):
 		#User entry
 		recordloststock_id = request.form['itemmodifyconfirm']
 		recordloststock_id_new = recordloststock_id[15:]
-		stock_lost  = request.form.get('stocklost' + recordloststock_id_new, type = int)
+		stock_lost = request.form.get('stocklost' + recordloststock_id_new, type = int)
 
 		try:
 			#Inventory database query update values
@@ -2311,10 +2285,6 @@ def Settings_post(login_token):
 		cursor.execute(''' DELETE FROM Inventory ''')
 		mysql.connection.commit()
 
-		#Employees database query reset
-		cursor.execute(''' DELETE FROM Employees ''')
-		mysql.connection.commit()
-
 		#Cart database query reset
 		cursor.execute(''' DELETE FROM Cart ''')
 		mysql.connection.commit()
@@ -2439,6 +2409,7 @@ def Settings_post(login_token):
 		canvas.drawString(180, 30, f'xxxxxxRs')
 		canvas.drawString(0, 20, '-----------------------------------------------------------------------------------------------------------------------------------------')
 		canvas.drawString(5, 12, 'THANKYOU FOR SHOPPING WITH US')
+		canvas.drawString(5, 5, '12345678')
 		canvas.setFont('Helvetica', 5)
 		canvas.drawString(123, 5, f'valid for refund within {refund_valid_limit} days after purchase')
 
