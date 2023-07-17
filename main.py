@@ -10,15 +10,114 @@ from reportlab.pdfgen.canvas import Canvas
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.colors import HexColor
 from datetime import datetime
-import uuid, pygal, secrets, string, os, barcode, pathlib, socket, webbrowser
+from barcode import Code128
+from barcode import EAN13
+import uuid, pygal, secrets, string, os, pathlib, socket, webbrowser, bcrypt
+
 
 '''
 Final testing
+Login
+	correct
+	incorrect
+Logout
+Suppliers
+	Search
+		id
+		name
+		contact
+	Add
+		missing attr
+		correct
+		with image
+		without image
+	Modify
+		name
+		contact
+Employees
+	Search
+		id
+		name
+		position
+	Add
+		missing attr
+		correct
+		with image
+		without image
+	Modify
+		name
+		position
+Inventory
+	Search
+		id
+		stock
+		name
+		expirydate
+		supplier
+		unitsaleprice
+	Add
+		missing attr
+		correct
+		with image
+		without image
+	Modify
+		name
+		sale price
+		expiry date
+		supplier
+		stock lost
+		stock bought
+Customers
+	Search
+		id
+		stock
+		name
+		contact number
+		address
+	Add
+		missing attr
+		correct
+	Modify
+		name
+		contact
+		address
+Settings
+	change closing time
+	change sales tax
+	change refund validity limit
+	change shop contact
+	change shop address
+	clear holding tokens
+	clear databases
+	clear receipts
+	test receipt
+RecordSale
+	item add
+		correct
+		incorrect
+	same item add
+		correct
+		incorrect
+	item delete
+		stock reduce
+		stock 0
+	cart hold
+	checkout
+	refund
+	calculate total
+	reset
+	amount paid
+		correct incorrect
+	cart search
+Home
+	create summary
+	view summary
 '''
 
 app = Flask(__name__)
 app.secret_key = str(uuid.uuid4().hex[:20])
 
+# connecting to mysql db hosted on aws rds
 app.config["SESSION_TYPE"] = "filesystem"
 app.config['MYSQL_HOST'] = 'dbms-project.chenoax9owcu.eu-north-1.rds.amazonaws.com'
 app.config['MYSQL_PORT'] = 3306
@@ -27,11 +126,14 @@ app.config['MYSQL_PASSWORD'] = 'jaa722bpe711'
 app.config['MYSQL_DB'] = 'sys'
 mysql = MySQL(app)
 
+# using hardcoded salt aka pepper to hash passwords entered
+salt = b'$2b$12$mxoSXnFyH/St6P0Nq2APQe'
 
+# generate cartid and customerid
 cart_id = '1' + ''.join(secrets.choice(string.digits) for i in range(7))
 customer_id = ''.join(secrets.choice(string.digits) for i in range(8))
 
-
+# style for graph
 custom_style = Style(
 	background = '#EEEEEE',
 	plot_background = '#EEEEEE',
@@ -47,10 +149,12 @@ custom_style = Style(
 def Login():
 	error = 'none'
 
+	# already logged in redirect to home page
 	if session.get('login_token'):
 		login_token = session.get('login_token')
 		return redirect(url_for('Home', login_token = login_token))
 
+	# not logged in render login page
 	login_token = ''
 	session['login_token'] = login_token
 
@@ -59,11 +163,13 @@ def Login():
 
 @app.route('/', methods = ['GET', 'POST'])
 def Login_post():
-	#User entry
+	# get user entered username and password
 	username_entry = request.form['usernameentry']
+	password_entry = request.form['passwordentry']
 	error = 'none'
 
-	if username_entry == '':
+	# if username or password not entered throw error and render login page again
+	if username_entry == '' or password_entry == '':
 		error = 'missing input/s'
 
 		login_token = ''
@@ -74,39 +180,55 @@ def Login_post():
 	else:
 		pass
 
-	#Creating a connection cursor
+	# creating a connection cursor
 	cursor = mysql.connection.cursor()
 
-	#Accounts database query check name and pass
+	# employees database query check name and pass
 	cursor.execute(''' SELECT EmployeeName FROM Employees ''')
 	accounts_db_data = cursor.fetchall()
 
-	#Employee entry validation
+	# employee entry validation
 	for accounts_data_username in accounts_db_data:
 		for empname in accounts_data_username:
 			if username_entry == empname:
 
-				emp_id = None
-				cursor.execute(''' SELECT EmployeeID FROM Employees WHERE EmployeeName = %s''', (empname,))
-				emp_id_data = cursor.fetchall()
-				for emp_id_tuple in emp_id_data:
-					for eid in emp_id_tuple:
-						emp_id = eid
+				# get stored password hash from file
+				password_file = open('bin/authenticate.bin', 'rb')
+				password_stored_hash = password_file.read()
+				password_file.close()
 
-				cursor.close()
+				# encode entered password
+				password_entry = password_entry.encode()
 
-				error = 'inputs verified'
+				# hash entered password using salt
+				password_entry_hash = bcrypt.hashpw(password_entry, salt)
 
-				login_token = str(uuid.uuid4().hex[:20])
-				session['login_token'] = login_token
-				session['emp_id'] = emp_id
+				# if entred password hash and stored password hash equal
+				if password_stored_hash == password_entry_hash:
+					# get employee id
+					cursor.execute(''' SELECT EmployeeID FROM Employees WHERE EmployeeName = %s ''', (empname,))
+					emp_id_data = cursor.fetchall()
+					for emp_id_tuple in emp_id_data:
+						for eid in emp_id_tuple:
+							emp_id = eid
 
-				return redirect(url_for('Home', login_token = login_token))
+					cursor.close()
+
+					error = 'inputs verified'
+
+					# generate login token
+					login_token = str(uuid.uuid4().hex[:20])
+
+					session['login_token'] = login_token
+					session['emp_id'] = emp_id
+
+					return redirect(url_for('Home', login_token = login_token))
+
+				else:
+					error = "invalid input/s"
 
 			else:
-				pass
-
-	error = 'invalid input/s'
+				error = "invalid input/s"
 	
 	login_token = ''
 	session['login_token'] = login_token
@@ -121,7 +243,7 @@ def Logout():
 	#LOGIN TOKEN VALIDATION
 	login_token = session.get('login_token')
 	if login_token == '':
-		return redirect(f'http://{ip_address}:7500/')
+		return redirect(f'http://localhost:5000/')
 
 	login_token = ''
 	session['login_token'] = login_token
@@ -134,9 +256,8 @@ def Logout():
 def Home(login_token):
 	#LOGIN TOKEN VALIDATION
 	login_token = session.get('login_token')
-	session['login_token'] = login_token
 	if login_token == '':
-		return redirect(f'http://{ip_address}:7500/')
+		return redirect(f'http://localhost:5000/')
 
 	error = 'none'
 	dashboard_data = []
@@ -150,80 +271,77 @@ def Home(login_token):
 	quantities = []
 	refund_ids = []
 
-	#Creating a connection cursor
+	# creating a connection cursor
 	cursor = mysql.connection.cursor()
 
-	#Calculating total number of items sold
+	# calculating total number of items sold
 	cursor.execute(''' SELECT Quantity FROM Cart ''')
 	number_of_items_sold = cursor.fetchall()	
 	total_items_sold = sum(list(map(sum, number_of_items_sold)))
-	#Calculating total number of items in inventory
+	# calculating total number of items in inventory
 	cursor.execute(''' SELECT Quantity FROM Inventory ''')
 	number_of_items_bought = cursor.fetchall()
-	print(number_of_items_bought)
 	total_items_bought = sum(list(map(sum, number_of_items_bought)))
+	# calculate sell through percentage [sold/bought * 100]
 	try:
 		sell_through = round((total_items_sold / total_items_bought) * 100, 2)
 	except ZeroDivisionError:
 		sell_through = 0
 
+	# append to dashboard data list
 	dashboard_data.append(sell_through)
 
-	#Get total sale prices for cart
+	# get total sale prices from cart
 	cursor.execute(''' SELECT TotalSalePrice FROM Cart ''')
 	sales = cursor.fetchall()	
 	for sales_tuple in sales:
 		for sales_value in sales_tuple:
 			sales_graph.append(sales_value)
+	# calculate average transaction value [total sales / number of sales]
 	try:
 		average_transaction = sum(sales_graph) / len(sales_graph)
 	except ZeroDivisionError:
 		average_transaction = 0
+	# append to dashboard data list
 	dashboard_data.append(average_transaction)
 
-	#Get total sale prices for cart
+	# get quantities for cart
 	cursor.execute(''' SELECT Quantity FROM Cart ''')
 	sales_quantities = cursor.fetchall()	
 	for sales_qty_tuple in sales_quantities:
 		for sales_quantities_value in sales_qty_tuple:
 			quantities.append(sales_quantities_value)
+	# calculate average transaction quantity [total quantities / number of sales]
 	try:
 		average_transaction_qty = sum(quantities) / len(quantities)
 	except ZeroDivisionError:
 		average_transaction_qty = 0
+	# append to dashboard data list
 	dashboard_data.append(average_transaction_qty)
 
+	# append to dashboard data list
 	dashboard_data.append(total_items_bought)
 	dashboard_data.append(total_items_sold)
 
-	#Inventory database query get item sale price
+	# inventory database query get item unit sale price
 	cursor.execute(''' SELECT TotalSalePrice FROM Cart ''')
 	total_sale_prices = cursor.fetchall()
-	#Item unit sale price from tuple to float
+	# item unit sale price from tuple to float
 	total_sale_prices_value = sum(list(map(sum, total_sale_prices)))
 
+	# append to dashboard data list
 	dashboard_data.append(total_sale_prices_value)
 
-	cursor.execute(''' SELECT DISTINCT CartID FROM Cart WHERE LEFT(CartID, 1) = 4 ''')
-	refunds = cursor.fetchall()
-	for refund_tuple in refunds:
-		for refund in refund_tuple:
-			refund_ids.append(refund)
-
-	dashboard_data.append(refund_ids)
-
+	# create line graph
 	graph = pygal.Line(style = custom_style)
-	# graph.x_labels = record_months
-	# graph.add('gross profit', gross_profits_graph)
 	graph.add('sales', sales_graph)
 	graph_data = graph.render_data_uri()
 
-	#ITEM STOCK LOW ALERTS
-	#Inventory database query get item stock low id
+	# inventory database query get item stock low id
 	cursor.execute(''' SELECT ProductID, ProductName, Quantity FROM Inventory WHERE Quantity <= 5 ''')
 	stock_low = cursor.fetchall()
 
-	#Dashboard database query get most selling item
+	# cart database query get most selling and least selling item id
 	cursor.execute('SELECT ProductID FROM Cart')
 	sold_items_data = cursor.fetchall()
 	for sold_items_tuple in sold_items_data:
@@ -236,7 +354,7 @@ def Home(login_token):
 	except:
 		most_selling_item_id = ''
 		least_selling_item_id = ''
-
+	# cart database query get most selling and least selling item name
 	cursor.execute('SELECT ProductName FROM Inventory WHERE ProductID = %s', (most_selling_item_id,))
 	most_selling_item_name_data = cursor.fetchall()
 	for most_name_tuple in most_selling_item_name_data:
@@ -248,18 +366,15 @@ def Home(login_token):
 		for least_name in least_name_tuple:
 			least_selling_item_name = least_name
 
-	#Display financial summaries for download
-	financial_summaries = [f for f in os.listdir('financial-summaries') if os.path.isfile(os.path.join('financial-summaries', f))]
+	# display financial summaries for viewing
+	financial_summaries = [f for f in os.listdir('financial-summaries') if os.path.isfile(os.path.join('financial-summaries', f)) and f.endswith('.pdf')]
 
 	cursor.close()
 
-
-	#Get Closing time from ClosingTime file 
+	# get Closing time from ClosingTime file
 	closing_time_file = open('bin/ClosingTime.bin', 'rb')
 	closing_time = closing_time_file.read().decode()
 	closing_time_file.close()
-
-	print(closing_time)
 
 	session['cart_id'] = cart_id
 	session['customer_id'] = customer_id
@@ -281,7 +396,6 @@ def Home_post(login_token):
 	most_selling_item_name = session.get('most_selling_item_name')
 	least_selling_item_name = session.get('least_selling_item_name')
 	compiled_app_path = pathlib.Path(__file__).parent.resolve()
-	print(dashboard_data)
 
 	button_pressed = request.form['buttonpressed']
 
@@ -320,7 +434,7 @@ def Home_post(login_token):
 		os.startfile(f'{compiled_app_path}\\financial-summaries\\{button_pressed[4:]}')
 
 	#Display financial summaries for download
-	financial_summaries = [f for f in os.listdir('financial-summaries') if os.path.isfile(os.path.join('financial-summaries', f))]
+	financial_summaries = [f for f in os.listdir('financial-summaries') if os.path.isfile(os.path.join('financial-summaries', f)) and f.endswith('.pdf')]
 
 	return redirect(f'http://localhost:5000/home/{login_token}')
 
@@ -961,8 +1075,7 @@ def Checkout(login_token):
 		shop_closingtime_file.close()
 
 		try:
-			barcode_format = barcode.get_barcode_class('code128')
-			receipt_barcode = barcode_format(str(cart_id), writer = ImageWriter())
+			receipt_barcode = Code128(cart_id, writer = ImageWriter())
 			receipt_barcode.save(f'static/receipt-barcodes/{cart_id}')
 		except Exception:
 			pass
@@ -1098,9 +1211,11 @@ def Checkout(login_token):
 		sales_tax = float(sales_tax_file.read().decode())
 		sales_tax_file.close()
 
-		barcode_format = barcode.get_barcode_class('code128')
-		receipt_barcode = barcode_format(str(cart_id), writer = ImageWriter())
-		receipt_barcode.save(f'static/receipt-barcodes/{cart_id}')
+		try:
+			receipt_barcode = Code128(str(cart_id), writer = ImageWriter())
+			receipt_barcode.save(f'static/receipt-barcodes/{cart_id}')
+		except Exception:
+			pass
 
 		shop_address_file = open('bin/ShopAddress.bin', 'rb')
 		shop_address = shop_address_file.read().decode()
@@ -1618,7 +1733,7 @@ def Suppliers_mod(login_token):
 		#User entry
 		supplier_modify_id = request.form['suppliermodifyconfirm']
 		supplier_modify_name = request.form['suppliermodifyname' + str(supplier_modify_id)]
-		supplier_modify_contact = request.form['suppliermodifycategory' + str(supplier_modify_id)]
+		supplier_modify_contact = request.form['suppliermodifycontact' + str(supplier_modify_id)]
 
 		try:
 			#Suppliers database query update values
@@ -1990,9 +2105,11 @@ def Inventory_mod(login_token):
 			cursor.execute(''' INSERT INTO EmployeeInventory VALUES(%s, %s)''', (emp_id, item_add_id))
 			mysql.connection.commit()
 
-			barcode_format = barcode.get_barcode_class('ean8')
-			item_add_barcode = barcode_format(str(item_add_id), writer = ImageWriter())
-			item_add_barcode.save(f'static/item-barcodes/{item_add_id}')
+			try:
+				item_add_barcode = EAN13(str(item_add_id), writer = ImageWriter())
+				item_add_barcode.save(f'static/item-barcodes/{item_add_id}')
+			except Exception:
+				pass
 
 			error = 'modification successful'
 
@@ -2347,9 +2464,11 @@ def Settings_post(login_token):
 		sales_tax = sales_tax_file.read().decode()
 		sales_tax_file.close()
 
-		barcode_format = barcode.get_barcode_class('code128')
-		receipt_barcode = barcode_format(str(cart_id), writer = ImageWriter())
-		receipt_barcode.save(f'static/receipt-barcodes/test')
+		try:
+			receipt_barcode = Code128(str(cart_id), writer = ImageWriter())
+			receipt_barcode.save(f'static/receipt-barcodes/test')
+		except Exception:
+			pass
 
 		shop_address_file = open('bin/ShopAddress.bin', 'rb')
 		shop_address = shop_address_file.read().decode()

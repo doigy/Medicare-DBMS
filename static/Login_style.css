@@ -54,7 +54,8 @@ body{
 #icon{
 	font-size: 1.3em;
 }
-.username-entry-label{
+
+.username-entry-label, .password-entry-label{
 	color: #2D2D2D;
 	margin-top: 1.5em;
 	font-family: "Verdana", monospace;
@@ -62,7 +63,7 @@ body{
 	letter-spacing: 0.25em;
 }
 
-.username-entry-textbox{
+.username-entry-textbox, .password-entry-textbox{
 	background-color: transparent;
 	color: #2D2D2D;
 	width: 15em;
@@ -73,7 +74,7 @@ body{
 	border-bottom: 0.1em solid #2D2D2D;
 }
 
-.username-entry-textbox:focus{
+.username-entry-textbox:focus, .password-entry-textbox:focus{
 	background-color: transparent;
 	border: none;
 	outline: none;
@@ -110,37 +111,4 @@ body{
 
 .resetpasswordusername-button:hover{
 	text-decoration: underline;
-}
-
-.contact-buttons-container{
-	widtth: 20em;
-	margin-top: 3em;
-	display: flex;
-	justify-content: space-between;
-}
-
-.facebook-button, .instagram-button, .gmail-button{
-	height: 1.6em;
-	width: 1.6em;
-	padding: 0.4em;
-	font-size: 1.8em;
-	text-align: center;
-	outline: none;
-	text-decoration: none;
-}
-
-.facebook-button{
-	color: #3B5998;
-}
-
-.instagram-button{
-	color: #EEEEEE;
-	border-radius: 0.4em;
-	background: -webkit-linear-gradient(45deg, #F09433 0%, #E6683C 25%, #DC2743 50%, #CC2366 75%, #BC1888 100%);
-  	-webkit-background-clip: text;
-  	-webkit-text-fill-color: transparent;
-}
-
-.gmail-button{
-	color: #D44638;
 }
