@@ -355,7 +355,7 @@ def Record_sale(login_token):
 	login_token = session.get('login_token')
 	session['login_token'] = login_token
 	if login_token == '':
-		return redirect(f'http://{ip_address}:7500/')
+		return redirect(f'http://localhost:5000/')
 
 	error = 'none'
 
@@ -414,7 +414,7 @@ def Record_sale_post(login_token):
 	login_token = session.get('login_token')
 	session['login_token'] = login_token
 	if login_token == '':
-		return redirect(f'http://{ip_address}:7500/')
+		return redirect(f'http://localhost:5000/')
 
 	cart_id = session.get('cart_id')
 	customer_id = session.get('customer_id')
@@ -864,7 +864,7 @@ def Checkout(login_token):
 	login_token = session.get('login_token')
 	if login_token == '':
 		session['login_token'] = login_token
-		return redirect(f'http://{ip_address}:7500/')
+		return redirect(f'http://localhost:5000/')
 
 	cart_id = session.get('cart_id')
 	customer_id = session.get('customer_id')
@@ -1316,7 +1316,7 @@ def Customers(login_token):
 	login_token = session.get('login_token')
 	if login_token == '':
 		session['login_token'] = login_token
-		return redirect(f'http://{ip_address}:7500/')
+		return redirect(f'http://localhost:5000/')
 
 	new_id = ''.join(secrets.choice(string.digits) for i in range(8))
 	customers_search_results = []
@@ -1332,7 +1332,7 @@ def Customers_search(login_token):
 	login_token = session.get('login_token')
 	if login_token == '':
 		session['login_token'] = login_token
-		return redirect(f'http://{ip_address}:7500/')
+		return redirect(f'http://localhost:5000/')
 
 	new_id = ''.join(secrets.choice(string.digits) for i in range(8))
 	customers_search_results = []
@@ -1402,7 +1402,7 @@ def Customers_mod(login_token):
 	login_token = session.get('login_token')
 	if login_token == '':
 		session['login_token'] = login_token
-		return redirect(f'http://{ip_address}:7500/')
+		return redirect(f'http://localhost:5000/')
 
 	new_id = ''.join(secrets.choice(string.digits) for i in range(8))
 	customers_search_results = []
@@ -1494,7 +1494,7 @@ def Suppliers(login_token):
 	login_token = session.get('login_token')
 	if login_token == '':
 		session['login_token'] = login_token
-		return redirect(f'http://{ip_address}:7500/')
+		return redirect(f'http://localhost:5000/')
 
 	new_id = ''.join(secrets.choice(string.digits) for i in range(8))
 	suppliers_search_results = []
@@ -1510,7 +1510,7 @@ def Suppliers_search(login_token):
 	login_token = session.get('login_token')
 	if login_token == '':
 		session['login_token'] = login_token
-		return redirect(f'http://{ip_address}:7500/')
+		return redirect(f'http://localhost:5000/')
 
 	new_id = ''.join(secrets.choice(string.digits) for i in range(8))
 	suppliers_search_results = []
@@ -1574,7 +1574,7 @@ def Suppliers_mod(login_token):
 	login_token = session.get('login_token')
 	if login_token == '':
 		session['login_token'] = login_token
-		return redirect(f'http://{ip_address}:7500/')
+		return redirect(f'http://localhost:5000/')
 
 	new_id = ''.join(secrets.choice(string.digits) for i in range(8))
 	suppliers_search_results = []
@@ -1682,7 +1682,7 @@ def Employees(login_token):
 	login_token = session.get('login_token')
 	if login_token == '':
 		session['login_token'] = login_token
-		return redirect(f'http://{ip_address}:7500/')
+		return redirect(f'http://localhost:5000/')
 
 	new_id = ''.join(secrets.choice(string.digits) for i in range(8))
 	employees_search_results = []
@@ -1698,7 +1698,7 @@ def Employees_search(login_token):
 	login_token = session.get('login_token')
 	if login_token == '':
 		session['login_token'] = login_token
-		return redirect(f'http://{ip_address}:7500/')
+		return redirect(f'http://localhost:5000/')
 
 	new_id = ''.join(secrets.choice(string.digits) for i in range(8))
 	employees_search_results = []
@@ -1756,7 +1756,7 @@ def Employees_mod(login_token):
 	login_token = session.get('login_token')
 	if login_token == '':
 		session['login_token'] = login_token
-		return redirect(f'http://{ip_address}:7500/')
+		return redirect(f'http://localhost:5000/')
 
 	new_id = ''.join(secrets.choice(string.digits) for i in range(8))
 	employees_search_results = []
@@ -1860,7 +1860,7 @@ def Inventory(login_token):
 	login_token = session.get('login_token')
 	if login_token == '':
 		session['login_token'] = login_token
-		return redirect(f'http://{ip_address}:7500/')
+		return redirect(f'http://localhost:5000/')
 
 	new_id = int(''.join(secrets.choice(string.digits) for i in range(8)))
 	inventory_search_results = []
@@ -1884,7 +1884,7 @@ def Inventory_search(login_token):
 	login_token = session.get('login_token')
 	if login_token == '':
 		session['login_token'] = login_token
-		return redirect(f'http://{ip_address}:7500/')
+		return redirect(f'http://localhost:5000/')
 
 	new_id = int(''.join(secrets.choice(string.digits) for i in range(8)))
 	inventory_search_results = []
@@ -1966,7 +1966,7 @@ def Inventory_mod(login_token):
 	login_token = session.get('login_token')
 	if login_token == '':
 		session['login_token'] = login_token
-		return redirect(f'http://{ip_address}:7500/')
+		return redirect(f'http://localhost:5000/')
 
 	new_id = ''.join(secrets.choice(string.digits) for i in range(8))
 	inventory_search_results = []
@@ -2141,7 +2141,7 @@ def Settings(login_token):
 	login_token = session.get('login_token')
 	if login_token == '':
 		session['login_token'] = login_token
-		return redirect(f'http://{ip_address}:7500/')
+		return redirect(f'http://localhost:5000/')
 
 	closingtime_file_read = open('bin/ClosingTime.bin', 'rb')
 	current_closingtime = closingtime_file_read.read().decode()
