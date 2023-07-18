@@ -96,19 +96,3 @@ body{
 	background-color: #2D2D2D;
 	color: #EEEEEE;
 }
-
-.resetpasswordusername-button-container{
-	margin-top: 1.8em;
-}
-
-.resetpasswordusername-button{
-	color: #2D2D2D;
-	font-size: 1.1em;
-	font-family: "Verdana", monospace;
-	outline: none;
-	text-decoration: none;
-}
-
-.resetpasswordusername-button:hover{
-	text-decoration: underline;
-}
