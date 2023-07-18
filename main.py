@@ -10,9 +10,9 @@ from reportlab.pdfgen.canvas import Canvas
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.colors import HexColor
 from datetime import datetime
-from barcode import Code128
-from barcode import EAN8
-import uuid, pygal, secrets, string, os, pathlib, socket, webbrowser, bcrypt
+from barcode.codex import Code128
+from barcode.ean import EAN8
+import uuid, pygal, secrets, string, os, pathlib, webbrowser, bcrypt
 
 
 app = Flask(__name__)
